@@ -21,12 +21,13 @@ export default function Router() {
     const { user } = useAuth();
 
   return useRoutes([
-    { path: '/', element: user ? <Navigate to="/dashboard" /> : <Login /> },
-    { path: '/login', element: user ? <Navigate to="/dashboard" /> : <Login /> },
+    { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
+    { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
     { path: '/dashboard', element: <PrivateRoute><DashboardLayout children={<DashboardApp />} /></PrivateRoute> },
     { path: '/user', element: <PrivateRoute><DashboardLayout children={<User />} /></PrivateRoute> },
     { path: '/products', element: <PrivateRoute><DashboardLayout children={<Products />} /></PrivateRoute> },
     { path: '/blog', element: <PrivateRoute><DashboardLayout children={<Blog />} /></PrivateRoute> },
+    { path: '/register', element: <PrivateRoute><DashboardLayout children={<Register />} /></PrivateRoute> },
     { path: '*', element: <NotFound /> },
   ]);
 }

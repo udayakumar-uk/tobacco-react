@@ -64,17 +64,6 @@ export default function Register() {
   return (
     <Page title="Register">
       <RootStyle>
-        <HeaderStyle>
-          <Logo />
-          {smUp && (
-            <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              Already have an account? {''}
-              <Link variant="subtitle2" component={RouterLink} to="/login">
-                Login
-              </Link>
-            </Typography>
-          )}
-        </HeaderStyle>
 
         {mdUp && (
           <SectionStyle>

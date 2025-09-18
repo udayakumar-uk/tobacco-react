@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, IconButton, InputAdornment, Alert } from '@mui/material';
+import { Stack, IconButton, InputAdornment, Alert, Snackbar, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -19,6 +19,7 @@ import { useAuth } from '../../../context/AuthContext';
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const { login, user } = useAuth();
   const navigate = useNavigate();
@@ -55,8 +56,10 @@ export default function LoginForm() {
     try {
       const data = await login(formData);
       
+      
       if (data.token) {
-        navigate('/dashboard', { replace: true });
+        setShowToast(true);
+        navigate('/user', { replace: true });
         setError('');
       } else {
         setError(data.response || 'Login failed');
@@ -73,6 +76,16 @@ export default function LoginForm() {
           {error}
         </Alert>
       )}
+
+      <Snackbar open={showToast} autoHideDuration={3000} onClose={() => setShowToast(false)}>
+        <Alert
+          onClose={() => setShowToast(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >Logged in successfully!
+        </Alert>
+      </Snackbar>
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
         <Stack spacing={3}>
