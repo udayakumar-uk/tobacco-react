@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
+import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Backdrop, CircularProgress, Button  } from '@mui/material';
 // components
 import MenuPopover from '../../components/MenuPopover';
 // mocks_
@@ -32,12 +32,12 @@ const MENU_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover() {
+export default function AccountPopover({ setLoad }) {
   const anchorRef = useRef(null);
 
   const navigate = useNavigate();
 
-  const { logout } = useAuth();
+  const { logout, myUser } = useAuth();
 
   const [open, setOpen] = useState(null);
 
@@ -49,12 +49,13 @@ export default function AccountPopover() {
     setOpen(null);
   };
 
-
   const handleLogout = async () => {
+      setLoad(true);
     try {
       const data = await logout();
 
       console.log("Logout status:", data);
+
 
     if (data.status === 1) {
       navigate('/login', { replace: true });
@@ -103,15 +104,15 @@ export default function AccountPopover() {
         }}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+          <Typography variant="subtitle2" noWrap sx={{ textTransform: "capitalize" }}>
+            {myUser && myUser.officerName ? myUser.officerName : 'Loading...'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {myUser && myUser.email ? myUser.email : ''}
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        {/* <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
@@ -119,7 +120,7 @@ export default function AccountPopover() {
               {option.label}
             </MenuItem>
           ))}
-        </Stack>
+        </Stack> */}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 

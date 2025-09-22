@@ -22,7 +22,6 @@ import {
 
 export default function DashboardApp() {
   const theme = useTheme();
-
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">

@@ -26,7 +26,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/user");
     }
   }, [user, navigate]);
 
@@ -55,7 +55,6 @@ export default function LoginForm() {
   const onSubmitForm = async (formData) => {
     try {
       const data = await login(formData);
-      
       
       if (data.token) {
         setShowToast(true);

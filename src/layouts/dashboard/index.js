@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
+import BackDrop from '../../components/BackDrop';
 
 // ----------------------------------------------------------------------
 
@@ -22,9 +23,9 @@ const MainStyle = styled('div')(({ theme }) => ({
   overflow: 'auto',
   minHeight: '100%',
   paddingTop: APP_BAR_MOBILE + 24,
-  paddingBottom: theme.spacing(10),
+  paddingBottom: theme.spacing(5),
   [theme.breakpoints.up('lg')]: {
-    paddingTop: APP_BAR_DESKTOP + 24,
+    paddingTop: 90,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2)
   }
@@ -34,10 +35,12 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout({ children }) {
   const [open, setOpen] = useState(false);
+  const [load, setLoad] = useState(false);
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
+      <BackDrop open={load}/>
+      <DashboardNavbar onOpenSidebar={() => setOpen(true)} setLoad={setLoad}/>
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       <MainStyle>
         {children}

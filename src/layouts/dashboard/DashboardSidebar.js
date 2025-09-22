@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, DialogContent, DialogContentText, DialogTitle, Typography, Avatar, Stack, Dialog, DialogActions, TextField } from '@mui/material';
-// mock
-import account from '../../_mock/account';
+import { Box, Link, Button, Drawer, Typography, Avatar, Stack, TextField } from '@mui/material';
 // hooks
 import useResponsive from '../../hooks/useResponsive';
 // components
@@ -27,13 +25,13 @@ const RootStyle = styled('div')(({ theme }) => ({
   },
 }));
 
-const AccountStyle = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2, 2.5),
-  borderRadius: Number(theme.shape.borderRadius) * 1.5,
-  backgroundColor: theme.palette.grey[500_12],
-}));
+// const AccountStyle = styled('div')(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   padding: theme.spacing(2, 2.5),
+//   borderRadius: Number(theme.shape.borderRadius) * 1.5,
+//   backgroundColor: theme.palette.grey[500_12],
+// }));
 
 // ----------------------------------------------------------------------
 
@@ -72,11 +70,11 @@ const [open, setOpen] = React.useState(false);
         '& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
+      <Box sx={{ p: 2, display: 'inline-flex' }}>
         <Logo />
       </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5 }}>
+      {/* <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="#">
           <AccountStyle>
             <Avatar src={account.photoURL} alt="photoURL" />
@@ -90,65 +88,11 @@ const [open, setOpen] = React.useState(false);
             </Box>
           </AccountStyle>
         </Link>
-      </Box>
+      </Box> */}
 
       <NavSection navConfig={navConfig} />
 
       <Box sx={{ flexGrow: 1 }} />
-
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-        <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-          <Box
-            component="img"
-            src="/static/illustrations/illustration_avatar.png"
-            sx={{ width: 100, position: 'absolute', top: -50 }}
-          />
-
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              Get more?
-            </Typography>
-            <p className='text-secondary'>Upgrade to get more features</p>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              From only $69
-            </Typography>
-          </Box>
-
-          <Button variant="contained" onClick={handleClickOpen}>Open modal</Button>
-          
-
-<Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
-          </DialogContentText>
-          <form id="subscription-form">
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="name"
-              name="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="standard"
-            />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" form="subscription-form">
-            Subscribe
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-
-        </Stack>
-      </Box>
 
     </Scrollbar>
   );

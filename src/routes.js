@@ -1,15 +1,16 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
-import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 //
 import Blog from './pages/Blog';
-import User from './pages/User';
-import Login from './pages/Login';
-import NotFound from './pages/Page404';
-import Register from './pages/Register';
 import Products from './pages/Products';
 import DashboardApp from './pages/DashboardApp';
+import User from './pages/User';
+import Barn from './pages/Barn';
+import Login from './pages/Login';
+import NotFound from './pages/Page404';
+import CreateNewUser from './pages/CreateNewUser';
+import CreateNewBarn from './pages/CreateNewBarn';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -21,13 +22,22 @@ export default function Router() {
     const { user } = useAuth();
 
   return useRoutes([
-    { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
-    { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
-    { path: '/dashboard', element: <PrivateRoute><DashboardLayout children={<DashboardApp />} /></PrivateRoute> },
-    { path: '/user', element: <PrivateRoute><DashboardLayout children={<User />} /></PrivateRoute> },
-    { path: '/products', element: <PrivateRoute><DashboardLayout children={<Products />} /></PrivateRoute> },
-    { path: '/blog', element: <PrivateRoute><DashboardLayout children={<Blog />} /></PrivateRoute> },
-    { path: '/register', element: <PrivateRoute><DashboardLayout children={<Register />} /></PrivateRoute> },
-    { path: '*', element: <NotFound /> },
+      { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
+      { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
+      {
+        path: '/user',
+        children: [
+          { path: '', element: <PrivateRoute><DashboardLayout children={<User />} /></PrivateRoute> },
+          { path: 'createnewuser', element: <PrivateRoute><DashboardLayout children={<CreateNewUser />} /></PrivateRoute> }
+        ]
+      },
+      {
+        path: '/barn',
+        children: [
+          { path: '', element: <PrivateRoute><DashboardLayout children={<Barn />} /></PrivateRoute> },
+          { path: 'createnewbarn', element: <PrivateRoute><DashboardLayout children={<CreateNewBarn />} /></PrivateRoute> }
+        ]
+      },
+      { path: '*', element: <NotFound /> },
   ]);
 }

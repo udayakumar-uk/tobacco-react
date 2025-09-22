@@ -9,35 +9,20 @@ import Page from '../components/Page';
 import Logo from '../components/Logo';
 // sections
 import { LoginForm } from '../sections/auth/login';
-import AuthSocial from '../sections/auth/AuthSocial';
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
-  },
-}));
-
-const HeaderStyle = styled('header')(({ theme }) => ({
-  top: 0,
-  zIndex: 9,
-  lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  padding: theme.spacing(3),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7),
+    alignItems: 'center',
   },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
-  maxWidth: 464,
+  maxWidth: 450,
+  maxHeight: '95vh',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -45,7 +30,7 @@ const SectionStyle = styled(Card)(({ theme }) => ({
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: 400,
   margin: 'auto',
   minHeight: '100vh',
   display: 'flex',
@@ -64,28 +49,23 @@ export default function Login() {
   return (
     <Page title="Login">
       <RootStyle>
-        <HeaderStyle>
-          <Logo />
-        </HeaderStyle>
-
         {mdUp && (
           <SectionStyle>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
-            </Typography>
-            <img src="/static/illustrations/illustration_login.png" alt="login" />
+            <Logo disabledLink={'true'} width={300} sx={{ p: 3 }} />
+
+            <Typography variant="h3" sx={{ px: 5}}> Hi, Welcome Back </Typography>
+            <img src="/static/illustrations/Authentication.svg" alt="login" />
           </SectionStyle>
         )}
 
         <Container maxWidth="sm">
           <ContentStyle>
-            <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
-            </Typography>
+            {!mdUp && (
+              <Logo disabledLink={'true'} width={300} sx={{ py: 2 }} />
+            )}
+            <Typography variant="h4" gutterBottom> Login to Tobacco Board </Typography>
 
             <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your details below.</Typography>
-
-            {/* <AuthSocial /> */}
 
             <LoginForm />
 

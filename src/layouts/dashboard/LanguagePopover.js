@@ -15,14 +15,14 @@ const LANGS = [
   },
   {
     value: 'de',
-    label: 'German',
-    icon: '/static/icons/ic_flag_de.svg',
+    label: 'Hindi',
+    icon: '/static/icons/ic_flag_in.svg',
   },
-  {
-    value: 'fr',
-    label: 'French',
-    icon: '/static/icons/ic_flag_fr.svg',
-  },
+  // {
+  //   value: 'fr',
+  //   label: 'French',
+  //   icon: '/static/icons/ic_flag_fr.svg',
+  // },
 ];
 
 // ----------------------------------------------------------------------

@@ -8,10 +8,14 @@ import Iconify from '../../../components/Iconify';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Toolbar)(({ theme }) => ({
-  height: 96,
+  height: 80,
   display: 'flex',
   justifyContent: 'space-between',
   padding: theme.spacing(0, 1, 0, 3),
+  [theme.breakpoints.up('sm')]: {
+    height: 90,
+    padding: theme.spacing(2),
+  },
 }));
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
