@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 
-export function useGetFetch(getList) {
+export function useGetFetch(path) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ export function useGetFetch(getList) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/${getList}`, {
+        const response = await fetch(`${API_BASE_URL}/${path}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

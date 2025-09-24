@@ -11,6 +11,7 @@ import * as serviceWorker from './serviceWorker';
 import reportWebVitals from './reportWebVitals';
 
 import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from "./components/PrivateRoute";
 
 // ----------------------------------------------------------------------
 

@@ -58,7 +58,7 @@ export default function LoginForm() {
       
       if (data.token) {
         setShowToast(true);
-        navigate('/user', { replace: true });
+        navigate('/user');
         setError('');
       } else {
         setError(data.response || 'Login failed');

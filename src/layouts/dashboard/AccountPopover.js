@@ -50,21 +50,26 @@ export default function AccountPopover({ setLoad }) {
   };
 
   const handleLogout = async () => {
-      setLoad(true);
     try {
+      setLoad(true);
       const data = await logout();
 
       console.log("Logout status:", data);
 
 
-    if (data.status === 1) {
-      navigate('/login', { replace: true });
-    }
+      if (data.status === 1) {
+        navigate('/login');
+      }
 
-  } catch (error) {
-      console.error("Logout error:", error);
-  }
-};
+    } catch (error) {
+        console.error("Logout error:", error);
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('myUser');
+        window.location.reload();
+        navigate('/login');
+    }
+  };
 
   return (
     <>
@@ -124,7 +129,9 @@ export default function AccountPopover({ setLoad }) {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
+        <MenuItem onClick={handleLogout} sx={{ m: 1, color: 'error.dark', '&:hover': {
+            backgroundColor: 'error.lighter',
+          }, }}>
           Logout
         </MenuItem>
       </MenuPopover>

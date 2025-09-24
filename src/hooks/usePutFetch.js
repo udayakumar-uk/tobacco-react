@@ -2,24 +2,24 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 
-export function usePostFetch() {
+export function usePutFetch() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const { user } = useAuth();
 
-    const postData = async (endpoint, payload) => {
+    const putData = async (endpoint, payload) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user?.token}`,
+            Authorization: `Bearer ${user?.token}`,
         },
-        body: JSON.stringify({ data: payload }),
+        body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error('Failed to fetch data');
+      if (!response.ok) throw new Error('Failed to update data');
       const data = await response.json();
       return data;
     } catch (err) {
@@ -30,5 +30,5 @@ export function usePostFetch() {
     }
   };
 
-  return [postData, { loading, error }];
+  return [putData, { loading, error }];
 }

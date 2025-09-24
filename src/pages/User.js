@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
 import {
   Card,
@@ -18,7 +18,9 @@ import {
   TableContainer,
   TablePagination,
   CircularProgress,
-  Box
+  Box,
+  IconButton,
+  colors
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -34,6 +36,7 @@ import { useGetFetch } from '../hooks/useGetFetch';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: '', label: 'Action', alignRight: false, minWidth: 50 },
   { id: 'officerName', label: 'Name', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'mobileNumber', label: 'Mobile Number', alignRight: false },
@@ -44,7 +47,6 @@ const TABLE_HEAD = [
   { id: 'foCode', label: 'FO Code', alignRight: false },
   { id: 'clusterCode', label: 'Cluster Code', alignRight: false },
   { id: 'villageCode', label: 'Village Code', alignRight: false },
-  { id: '', label: 'Action', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -98,6 +100,7 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('officerName');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(8);
+  const navigate = useNavigate();
 
   const { data, loading, error } = useGetFetch('user/getAllUsers');
 
@@ -207,8 +210,17 @@ export default function User() {
                         selected={isItemSelected}
                         aria-checked={isItemSelected}
                       >
-                        <TableCell padding="checkbox">
+                        {/* <TableCell padding="checkbox">
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, _id)} />
+                        </TableCell> */}
+                        <TableCell align="center" size="small">
+                          {/* <UserMoreMenu /> */}
+                          <IconButton
+                            sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.lighter' } }}
+                            onClick={() => navigate(`/user/edit/${_id}`)}
+                          >
+                            <Iconify icon="eva:edit-fill" width={20} height={20} />
+                          </IconButton>
                         </TableCell>
                         <TableCell component="th" scope="row" size="small">
                           <Stack direction="row" alignItems="center" spacing={2}>
@@ -232,10 +244,6 @@ export default function User() {
                             {sentenceCase(status)}
                           </Label>
                         </TableCell> */}
-
-                        <TableCell align="right" size="small">
-                          <UserMoreMenu />
-                        </TableCell>
                       </TableRow>
                     );
                   })}

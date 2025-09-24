@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import NotFound from './pages/Page404';
 import CreateNewUser from './pages/CreateNewUser';
 import CreateNewBarn from './pages/CreateNewBarn';
+import EditUser from './pages/EditUser';
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -22,22 +23,25 @@ export default function Router() {
     const { user } = useAuth();
 
   return useRoutes([
-      { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
-      { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
-      {
-        path: '/user',
-        children: [
-          { path: '', element: <PrivateRoute><DashboardLayout children={<User />} /></PrivateRoute> },
-          { path: 'createnewuser', element: <PrivateRoute><DashboardLayout children={<CreateNewUser />} /></PrivateRoute> }
-        ]
-      },
-      {
-        path: '/barn',
-        children: [
-          { path: '', element: <PrivateRoute><DashboardLayout children={<Barn />} /></PrivateRoute> },
-          { path: 'createnewbarn', element: <PrivateRoute><DashboardLayout children={<CreateNewBarn />} /></PrivateRoute> }
-        ]
-      },
-      { path: '*', element: <NotFound /> },
+    { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
+    { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
+    {
+      path: '/user',
+      element: <DashboardLayout />,
+      children: [
+        { path: '', element: <User /> },
+        { path: 'createnewuser', element: <CreateNewUser /> },
+        { path: 'edit/:id', element: <EditUser /> }
+      ]
+    },
+    {
+      path: '/barn',
+      element: <DashboardLayout />,
+      children: [
+        { path: '', element: <Barn /> },
+        { path: 'edit/:id', element: <EditUser /> }
+      ]
+    },
+    { path: '*', element: <NotFound /> },
   ]);
 }

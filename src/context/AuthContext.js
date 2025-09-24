@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { API_BASE_URL } from '../config';
+import { useGetById } from '../hooks/useGetById';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [myUser, setMyUser] = useState(null);
+  const { userData, fetchUserById } = useGetById('user/getUserById');
 
   // load user from localStorage on refresh
   useEffect(() => {
@@ -30,34 +32,20 @@ export const AuthProvider = ({ children }) => {
     if (data.token) {
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
-      currUser(data.userId, data.token);
+      // Fetch user details and update myUser
+      const userDetails = await fetchUserById(data.userId, data.token);
+      if (userDetails.status) {
+        setMyUser(userDetails.data);
+        localStorage.setItem('myUser', JSON.stringify(userDetails.data));
+      } else {
+        setMyUser(null);
+        localStorage.removeItem('myUser');
+      }
     }
     return data;
   };
  
 
-  const currUser = async (userId, token) => {
-    // Get User Details with API
-    const response = await fetch(`${API_BASE_URL}/user/getUserById`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id: userId }),
-    });
-
-    if (!response.ok) throw new Error("Login failed");
-    const data = await response.json();
-
-    if (data.status) {
-      localStorage.setItem("myUser", JSON.stringify(data.data));
-      setMyUser(data.data);
-    }else{
-      setMyUser(null);
-      localStorage.removeItem("myUser");
-    }
-  };
 
   const logout = async () => {
     // Logout with API
@@ -86,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, myUser, login, logout }}>
+    <AuthContext.Provider value={{ user, myUser, userData, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
