@@ -54,7 +54,7 @@ export default function UserListHead({
             key={headCell.id}
             align={headCell.alignRight ? 'right' : 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            style={{ minWidth: headCell.minWidth ? headCell.minWidth : '150px' }}
+            style={{ minWidth: headCell.minWidth ? headCell.minWidth : '150px', lineHeight: 1.2 }}
           >
             <TableSortLabel
               hideSortIcon

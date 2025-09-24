@@ -99,14 +99,14 @@ export default function User() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('officerName');
   const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
 
-  const { data, loading, error } = useGetFetch('user/getAllUsers');
+  const [fetchUsers, { data, loading, error }] = useGetFetch('user/getAllUsers');
 
   useEffect(() => {
-    console.log(data, loading, error);
-  }, [data, loading, error]);
+    fetchUsers();
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

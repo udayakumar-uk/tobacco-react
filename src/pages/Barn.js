@@ -1,7 +1,9 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 // material
 import {
   Card,
@@ -20,8 +22,11 @@ import {
   CircularProgress,
   Box,
   IconButton,
-  colors
+  colors,
+  Snackbar,
+  Alert
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -32,24 +37,58 @@ import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashbo
 
 // custom hook to fetch users
 import { useGetFetch } from '../hooks/useGetFetch';
+import { usePostFetch } from '../hooks/usePostFetch';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: '', label: 'Action', alignRight: false, minWidth: 50 },
-  { id: 'officerName', label: 'Name', alignRight: false },
-  { id: 'email', label: 'Email', alignRight: false },
-  { id: 'mobileNumber', label: 'Mobile Number', alignRight: false },
-  // { id: 'password', label: 'Password', alignRight: false },
-  { id: 'officerId', label: 'Officer ID', alignRight: false },
-  { id: 'rmoRegion', label: 'RMO Region ', alignRight: false },
-  { id: 'apfLocation', label: 'APF Location', alignRight: false },
-  { id: 'foCode', label: 'FO Code', alignRight: false },
+  { id: 'cropYear', label: 'Crop Year', alignRight: false, minWidth: 100 },
+  { id: 'state', label: 'State', alignRight: false, minWidth: 100 },
+  { id: 'district', label: 'District', alignRight: false },
+  { id: 'mandal', label: 'Mandal', alignRight: false },
+  { id: 'code', label: 'Code ', alignRight: false },
+  { id: 'village', label: 'Village', alignRight: false },
+  { id: 'rmoRegion', label: 'RMO Region', alignRight: false },
+  { id: 'location', label: 'Location', alignRight: false },
   { id: 'clusterCode', label: 'Cluster Code', alignRight: false },
-  { id: 'villageCode', label: 'Village Code', alignRight: false },
+  { id: 'foCode', label: 'FO Code', alignRight: false },
+  { id: 'tbbrno', label: 'TBBR No', alignRight: false, minWidth: 100 },
+  { id: 'barnSoil', label: 'Barn Soil', alignRight: false, minWidth: 100 },
+  { id: 'barnUnit', label: 'Barn Unit', alignRight: false, minWidth: 100 },
+  { id: 'barnLic', label: 'Barn Lic', alignRight: false, minWidth: 100 },
+  { id: 'barnSize', label: 'Barn Size', alignRight: false },
+  { id: 'barnType', label: 'Barn Type', alignRight: false },
+  { id: 'insulation', label: 'Insulation', alignRight: false },
+  { id: 'furnace', label: 'Furnace', alignRight: false },
+  { id: 'fuelUsed', label: 'Fuel Used', alignRight: false },
+  { id: 'roof', label: 'Roof', alignRight: false },
+  { id: 'constructionType', label: 'Construction Type', alignRight: false, minWidth: 200 },
+  { id: 'highYield', label: 'High Yield', alignRight: false },
+  { id: 'BarnCond', label: 'Barn Cond', alignRight: false },
+  { id: 'nboundary', label: 'N Boundary', alignRight: false, minWidth: 120 },
+  { id: 'sboundary', label: 'S Boundary', alignRight: false, minWidth: 120 },
+  { id: 'eboundary', label: 'E Boundary', alignRight: false, minWidth: 120 },
+  { id: 'wboundary', label: 'W Boundary', alignRight: false, minWidth: 120 },
+  { id: 'constructedYear', label: 'Constructed Year', alignRight: false, minWidth: 200 },
+  // { id: 'status', label: 'Barn Soil', alignRight: false },
+  // { id: 'remarks', label: 'Barn Unit', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
+
+  const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+  });
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -99,14 +138,21 @@ export default function User() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('officerName');
   const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [importedBarns, setImportedBarns] = useState([]);
+  const [loadingSheet, setLoadingSheet] = useState(false);
   const navigate = useNavigate();
-
-  const { data, loading, error } = useGetFetch('user/getAllUsers');
+  const [success, setSuccess] = useState("");
+  const [postData] = usePostFetch();
+  
+  const [fileName, setFileName] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  
+  const [fetchUsers, { data, loading, error }] = useGetFetch('barn/getList');
 
   useEffect(() => {
-    console.log(data, loading, error);
-  }, [data, loading, error]);
+    fetchUsers();
+  }, [importedBarns]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -157,20 +203,79 @@ export default function User() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name);
+    setUploadError('');
+    setLoadingSheet(true);
+    try {
+      const sheetData = await file.arrayBuffer();
+      const workbook = XLSX.read(sheetData, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const barnData = await postData('barn/insert', jsonData);
+      setImportedBarns(jsonData);
+      setSuccess(true);
+      if (barnData.status) {
+        console.log('Barn Added Successfully!');
+      } else {
+        console.log(barnData.response || 'Barn failed');
+      }
+      // You can handle the imported data here (e.g., send to API, show preview, etc.)
+      console.log('Imported barns:', jsonData);
+    } catch (err) {
+      setUploadError('Failed to parse file. Please upload a valid Excel file.');
+    }
+    setLoadingSheet(false);
+  };
+
   return (
-    <Page title="User">
+    <Page title="Barn">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
           <Typography variant="h5">
             Barn Management
           </Typography>
-          <Button variant="contained" component={RouterLink} to="./createnewuser" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+          
+          <Button
+            component="label"
+            variant="contained"
+            tabIndex={0}
+            disabled={loadingSheet}
+            startIcon={loadingSheet ? <CircularProgress size={20} /> : <Iconify icon="eva:cloud-upload-fill" />}
+          >
+            {loadingSheet ? 'Processing...' : 'Upload Sheet'}
+            <VisuallyHiddenInput
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileChange}
+              aria-label="Upload Excel File"
+              disabled={loadingSheet}
+            />
           </Button>
+        
         </Stack>
 
         <Card>
+
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          
+          {success && (
+            <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
+              <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
+                Imported Successfully
+              </Alert>
+            </Snackbar>
+          )}
+
+          {uploadError && (
+            <Alert severity="error" variant="filled" sx={{ my: 2 }}>
+              {uploadError}
+            </Alert>
+          )}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -187,16 +292,34 @@ export default function User() {
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { 
-                      apfLocation, 
-                      clusterCode, 
-                      email, 
-                      foCode, 
-                      mobileNumber, 
-                      officerId, 
-                      officerName,
-                      password,
+                      cropYear,
+                      state,
+                      district,
+                      mandal,
+                      code,
+                      village,
                       rmoRegion,
-                      villageCode,
+                      location,
+                      clusterCode,
+                      foCode,
+                      tbbrno,
+                      barnSoil,
+                      barnUnit,
+                      barnLic,
+                      barnSize,
+                      barnType,
+                      insulation,
+                      furnace,
+                      fuelUsed,
+                      roof,
+                      constructionType,
+                      highYield,
+                      BarnCond,
+                      nboundary,
+                      sboundary,
+                      eboundary,
+                      wboundary,
+                      constructedYear,
                       _id
                     } = row;
                     const isItemSelected = selected.indexOf(_id) !== -1;
@@ -213,37 +336,43 @@ export default function User() {
                         {/* <TableCell padding="checkbox">
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, _id)} />
                         </TableCell> */}
-                        <TableCell align="center" size="small">
+                        <TableCell align="center" size="small" padding='small' sx={{lineHeight: 1.2}}>
                           {/* <UserMoreMenu /> */}
                           <IconButton
                             sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.lighter' } }}
-                            onClick={() => navigate(`/user/edit/${_id}`)}
+                            onClick={() => navigate(`/barn/edit/${_id}`)}
                           >
                             <Iconify icon="eva:edit-fill" width={20} height={20} />
                           </IconButton>
                         </TableCell>
-                        <TableCell component="th" scope="row" size="small">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            {/* <Avatar alt={name} src={avatarUrl} /> */}
-                            <Typography variant="subtitle2" noWrap>
-                              {officerName}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left" size="small">{email}</TableCell>
-                        <TableCell align="left" size="small">{mobileNumber}</TableCell>
-                        {/* <TableCell align="left">{password}</TableCell> */}
-                        <TableCell align="left" size="small">{officerId}</TableCell>
-                        <TableCell align="left" size="small">{rmoRegion}</TableCell>
-                        <TableCell align="left" size="small">{apfLocation}</TableCell>
-                        <TableCell align="left" size="small">{foCode}</TableCell>
-                        <TableCell align="left" size="small">{clusterCode}</TableCell>
-                        <TableCell align="left" size="small">{villageCode}</TableCell>
-                        {/* <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
-                            {sentenceCase(status)}
-                          </Label>
-                        </TableCell> */}
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{cropYear}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{state}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{district}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{mandal}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{code}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{village}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{rmoRegion}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{location}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{clusterCode}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{foCode}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{tbbrno}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnSoil}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnUnit}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnLic}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnSize}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnType}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{insulation}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{furnace}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{fuelUsed}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{roof}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{constructionType}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{highYield}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{BarnCond}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{nboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{sboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{eboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{wboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{constructedYear}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -281,7 +410,7 @@ export default function User() {
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 25, 50]}
             component="div"
             count={data.length}
             rowsPerPage={rowsPerPage}

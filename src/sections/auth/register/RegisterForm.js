@@ -59,7 +59,7 @@ export default function RegisterForm() {
     formState: { isSubmitting },
   } = methods;
   
-const [postData, { loading }] = usePostFetch();
+  const [postData, { loadingState }] = usePostFetch();
 
   const onSubmitForm = async (formData) => {
     try {

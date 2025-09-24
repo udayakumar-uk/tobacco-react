@@ -8,7 +8,6 @@ export function useGetFetch(path) {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       setError(null);
@@ -30,8 +29,6 @@ export function useGetFetch(path) {
         setLoading(false);
       }
     };
-    if (user?.token) fetchUsers();
-  }, [user]);
 
-  return { data, loading, error };
+  return [fetchUsers, { data, loading, error }];
 }
