@@ -10,10 +10,8 @@ import Barn from './pages/Barn';
 import Login from './pages/Login';
 import NotFound from './pages/Page404';
 import CreateNewUser from './pages/CreateNewUser';
-import CreateNewBarn from './pages/CreateNewBarn';
 import EditUser from './pages/EditUser';
-
-import PrivateRoute from "./components/PrivateRoute";
+import EditBarn from './pages/EditBarn';
 
 import { useAuth } from './context/AuthContext';
 // ----------------------------------------------------------------------
@@ -39,7 +37,7 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { path: '', element: <Barn /> },
-        { path: 'edit/:id', element: <EditUser /> }
+        { path: 'edit/:id', element: <EditBarn /> }
       ]
     },
     { path: '*', element: <NotFound /> },

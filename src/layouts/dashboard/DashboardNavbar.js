@@ -20,10 +20,10 @@ const APPBAR_DESKTOP = 60;
 
 const RootStyle = styled(AppBar)(({ theme }) => ({
   boxShadow: 'none',
-  borderBottom: `1px dashed ${theme.palette.divider}`,
+  borderBottom: `1px solid ${theme.palette.divider}`,
   backdropFilter: 'blur(6px)',
   WebkitBackdropFilter: 'blur(6px)', // Fix on Mobile
-  backgroundColor: alpha(theme.palette.background.default, 0.72),
+  backgroundColor: theme.palette.common.white,
   [theme.breakpoints.up('lg')]: {
     width: `calc(100% - ${DRAWER_WIDTH + 1}px)`,
   },
@@ -51,7 +51,7 @@ export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
     <RootStyle>
       <ToolbarStyle>
         <IconButton onClick={onOpenSidebar} sx={{ mr: 1, color: 'text.primary', display: { lg: 'none' } }}>
-          <Iconify icon="eva:menu-2-fill" />
+          <Iconify icon="eva:menu-2-outline" />
         </IconButton>
 
     

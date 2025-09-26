@@ -1,11 +1,12 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
 // form
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, IconButton, InputAdornment, Grid, Box, Alert, Snackbar } from '@mui/material';
+import { Stack, Grid, Box, Alert, Snackbar, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -21,9 +22,15 @@ export default function RegisterForm() {
   const [regData, setRegData] = useState(false);
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const theme = useTheme();
+
+  const villageCode = ['20001', '20002', '20003', '20004', '20005'];
+  const states = ['AP', 'KA'];
+  
 
   const RegisterSchema = Yup.object().shape({
     officerName: Yup.string().required('Officer name required'),
+    role: Yup.string().required('Officer role required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string().required('Password is required'),
     mobileNumber: Yup.string().required('Mobile Number is required'),
@@ -32,11 +39,13 @@ export default function RegisterForm() {
     apfLocation: Yup.string().required('APF Location is required'),
     foCode: Yup.string().required('FO Code is required'),
     clusterCode: Yup.string().required('Cluster Code is required'),
-    villageCode: Yup.string().required('Village Code is required'),
+    villageCode: Yup.array().min(1, 'Select at least one village code').required('Village Code is required'),
+    state: Yup.array().min(1, 'Select at least one state').required('State is required'),
   });
 
   const defaultValues = {
     officerName: '',
+    role: '',
     email: '',
     password: '',
     mobileNumber: '',
@@ -45,7 +54,8 @@ export default function RegisterForm() {
     apfLocation: '',
     foCode: '',
     clusterCode: '',
-    villageCode: '',
+    villageCode: [],
+    state: [],
   };
 
   const methods = useForm({
@@ -56,14 +66,21 @@ export default function RegisterForm() {
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    control,
+    formState: { isSubmitting, errors }
   } = methods;
   
   const [postData, { loadingState }] = usePostFetch();
 
   const onSubmitForm = async (formData) => {
+    // Convert arrays to comma-separated strings
+    const submitData = {
+      ...formData,
+      villageCode: Array.isArray(formData.villageCode) ? formData.villageCode.join(',') : formData.villageCode,
+      state: Array.isArray(formData.state) ? formData.state.join(',') : formData.state,
+    };
     try {
-      const data = await postData('user/register', formData);
+      const data = await postData('user/register', submitData);
       if (data.status) {
         setShowToast(true);
         setRegData(data.response);
@@ -101,6 +118,9 @@ export default function RegisterForm() {
             <RHFTextField name="officerName" label="Officer Name" />
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
+            <RHFTextField name="role" label="Officer Role" />
+          </Grid>
+          <Grid item xs={12} md={4} sm={6}>
             <RHFTextField name="email" type="email" label="Email address" />
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
@@ -125,7 +145,65 @@ export default function RegisterForm() {
             <RHFTextField name="clusterCode" label="Cluster Code" />
           </Grid>
           <Grid item xs={12} md={4}>
-            <RHFTextField name="villageCode" label="Village Code" />
+            <FormControl fullWidth error={!!errors.villageCode}>
+              <InputLabel id="village_code_label">Village Code</InputLabel>
+              <Controller
+                name="villageCode"
+                control={control}
+                rules={{ required: "Village Code is required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId="village_code_label"
+                    id="village_code"
+                    multiple
+                    input={<OutlinedInput label="Village Code" />}
+                  >
+                    {villageCode.map((village) => (
+                      <MenuItem key={village} value={village}>
+                        {village}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.villageCode && (
+                <Typography sx={{ color: 'error.main', fontSize: "12px" }}>
+                  {errors.villageCode.message}
+                </Typography>
+              )}
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth error={!!errors.state}>
+              <InputLabel id="state_code_label">State</InputLabel>
+              <Controller
+                name="state"
+                control={control}
+                rules={{ required: "State Code is required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId="state_code_label"
+                    id="state_code"
+                    multiple
+                    input={<OutlinedInput label="State Code" />}
+                  >
+                    {states.map((st) => (
+                      <MenuItem key={st} value={st}>
+                        {st}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.state && (
+                <Typography sx={{ color: 'error.main', fontSize: "12px" }}>
+                  {errors.state.message}
+                </Typography>
+              )}
+            </FormControl>
           </Grid>
         </Grid>
       </Stack>

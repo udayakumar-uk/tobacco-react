@@ -118,8 +118,9 @@ const [open, setOpen] = React.useState(false);
           PaperProps={{
             sx: {
               width: DRAWER_WIDTH,
-              bgcolor: 'background.default',
-              borderRightStyle: 'dashed',
+              bgcolor: 'common.white',
+              // borderRightStyle: 'dashed',
+              borderColor: 'divider'
             },
           }}
         >

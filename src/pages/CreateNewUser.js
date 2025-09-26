@@ -58,7 +58,7 @@ export default function CreateNewUser() {
              
               {/* <Typography variant="h4" gutterBottom> Create a new user </Typography> */}
 
-              <Typography sx={{ color: 'text.secondary', mb: 5 }}>Caption if needed.</Typography>
+              <Typography sx={{ color: 'text.secondary', mb: 5 }}>Create a new user.</Typography>
 
               <RegisterForm />
 

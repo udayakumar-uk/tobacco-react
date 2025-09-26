@@ -7,6 +7,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Backdrop
 import MenuPopover from '../../components/MenuPopover';
 // mocks_
 import account from '../../_mock/account';
+import Iconify from '../../components/Iconify';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,17 +16,17 @@ import { useAuth } from '../../context/AuthContext';
 const MENU_OPTIONS = [
   {
     label: 'Home',
-    icon: 'eva:home-fill',
+    icon: 'eva:home-outline',
     linkTo: '/',
   },
   {
     label: 'Profile',
-    icon: 'eva:person-fill',
+    icon: 'eva:person-outline',
     linkTo: '#',
   },
   {
     label: 'Settings',
-    icon: 'eva:settings-2-fill',
+    icon: 'eva:settings-2-outline',
     linkTo: '#',
   },
 ];
@@ -66,8 +67,8 @@ export default function AccountPopover({ setLoad }) {
 
         localStorage.removeItem('user');
         localStorage.removeItem('myUser');
-        window.location.reload();
         navigate('/login');
+        window.location.reload();
     }
   };
 
@@ -132,7 +133,7 @@ export default function AccountPopover({ setLoad }) {
         <MenuItem onClick={handleLogout} sx={{ m: 1, color: 'error.dark', '&:hover': {
             backgroundColor: 'error.lighter',
           }, }}>
-          Logout
+          <Iconify icon="eva:log-out-outline" sx={{ mr: 1}} width={20} height={20} /> Logout
         </MenuItem>
       </MenuPopover>
     </>

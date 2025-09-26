@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 
 export function useGetFetch(path) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const user = JSON.parse(localStorage.getItem("user"));
 
     const fetchUsers = async () => {
       setLoading(true);
@@ -22,6 +21,7 @@ export function useGetFetch(path) {
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         setData(data.data || []);
+        console.log(data);
       } catch (err) {
         setError(err);
         setData([]);

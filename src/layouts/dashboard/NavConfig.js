@@ -14,12 +14,12 @@ const navConfig = [
   {
     title: 'User Management',
     path: '/user',
-    icon: getIcon('eva:people-fill'),
+    icon: getIcon('eva:people-outline'),
   },
   {
     title: 'Barn Management',
     path: '/barn',
-    icon: getIcon('eva:home-fill'),
+    icon: getIcon('eva:home-outline'),
   },
   // {
   //   title: 'product',

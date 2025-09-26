@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { alpha, useTheme } from '@mui/material/styles';
 // form
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, CircularProgress } from '@mui/material';
+import { Stack, Grid, Box, Alert, Snackbar, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -25,9 +25,13 @@ export default function EditUserForm({ userData, open }) {
   const [success, setSuccess] = useState("");
   const [updateData, setupdateData] = useState("");
   const [putData, { loading: updateLoading }] = usePutFetch();
+  
+  const villageCode = ['20001', '20002', '20003', '20004', '20005'];
+  const states = ['AP', 'KA'];
 
   const EditUserSchema = Yup.object().shape({
     officerName: Yup.string().required('Officer name required'),
+    role: Yup.string().required('Officer role required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string(), // Optional for update
     mobileNumber: Yup.string().required('Mobile Number is required'),
@@ -36,12 +40,14 @@ export default function EditUserForm({ userData, open }) {
     apfLocation: Yup.string().required('APF Location is required'),
     foCode: Yup.string().required('FO Code is required'),
     clusterCode: Yup.string().required('Cluster Code is required'),
-    villageCode: Yup.string().required('Village Code is required'),
+    villageCode: Yup.array().min(1, 'Select at least one village code').required('Village Code is required'),
+    state: Yup.array().min(1, 'Select at least one state').required('State is required'),
   });
 
   // Set default values from userData
   const defaultValues = {
     officerName: userData?.officerName || '',
+    role: userData?.role || '',
     email: userData?.email || '',
     password: '', // Don't prefill password
     mobileNumber: userData?.mobileNumber || '',
@@ -50,7 +56,8 @@ export default function EditUserForm({ userData, open }) {
     apfLocation: userData?.apfLocation || '',
     foCode: userData?.foCode || '',
     clusterCode: userData?.clusterCode || '',
-    villageCode: userData?.villageCode || '',
+    villageCode: userData?.villageCode?.split(',') || [],
+    state: userData?.state?.split(',') || [],
   };
 
   const methods = useForm({
@@ -62,24 +69,39 @@ export default function EditUserForm({ userData, open }) {
     handleSubmit,
     reset,
     setValue,
-    formState: { isSubmitting },
+    control,
+    formState: { isSubmitting, errors },
   } = methods;
 
   // Update form values when userData changes
   useEffect(() => {
     if (userData) {
       Object.keys(defaultValues).forEach((key) => {
-        setValue(key, userData[key] || (key === 'password' ? '' : ''));
+        if (key === 'villageCode' || key === 'state') {
+          if(userData[key]){
+            setValue(key, defaultValues[key]);
+          }else {
+            setValue(key, []);
+          }
+        } else {
+          setValue(key, userData[key] );
+        }
       });
     }
   }, [userData]);
 
 
   const onSubmitForm = async (formData) => {
+    // Convert arrays to comma-separated strings
+    const submitData = {
+      ...formData,
+      'id': id,
+      villageCode: Array.isArray(formData.villageCode) ? formData.villageCode.join(',') : formData.villageCode,
+      state: Array.isArray(formData.state) ? formData.state.join(',') : formData.state,
+    };
     try {
-      const formsData = { ...formData, 'id': id }
-
-      const data = await putData(`user/update`, formsData);
+      const data = await putData(`user/update`, submitData);
+      
       if (data.status) {
         setSuccess(true);
         setupdateData(data);
@@ -136,6 +158,9 @@ export default function EditUserForm({ userData, open }) {
               <RHFTextField name="officerName" label="Officer Name" />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="role" label="Officer Role" />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="email" type="email" label="Email address" />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
@@ -160,7 +185,65 @@ export default function EditUserForm({ userData, open }) {
               <RHFTextField name="clusterCode" label="Cluster Code" />
             </Grid>
             <Grid item xs={12} md={4}>
-              <RHFTextField name="villageCode" label="Village Code" />
+              <FormControl fullWidth error={!!errors.villageCode}>
+                <InputLabel id="village_code_label">Village Code</InputLabel>
+                <Controller
+                  name="villageCode"
+                  control={control}
+                  rules={{ required: "Village Code is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="village_code_label"
+                      id="village_code"
+                      multiple
+                      input={<OutlinedInput label="Village Code" />}
+                    >
+                      {villageCode.map((village) => (
+                        <MenuItem key={village} value={village}>
+                          {village}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.villageCode && (
+                  <Typography sx={{ color: 'error.main', fontSize: "12px" }}>
+                    {errors.villageCode.message}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth error={!!errors.state}>
+                <InputLabel id="village_code_label">State</InputLabel>
+                <Controller
+                  name="state"
+                  control={control}
+                  rules={{ required: "State Code is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="state_code_label"
+                      id="vstate_code"
+                      multiple
+                      input={<OutlinedInput label="State Code" />}
+                    >
+                      {states.map((st) => (
+                        <MenuItem key={st} value={st}>
+                          {st}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.state && (
+                  <Typography sx={{ color: 'error.main', fontSize: "12px" }}>
+                    {errors.state.message}
+                  </Typography>
+                )}
+              </FormControl>
             </Grid>
           </Grid>
         </Stack>

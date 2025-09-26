@@ -38,6 +38,7 @@ import { useGetFetch } from '../hooks/useGetFetch';
 const TABLE_HEAD = [
   { id: '', label: 'Action', alignRight: false, minWidth: 50 },
   { id: 'officerName', label: 'Name', alignRight: false },
+  { id: 'role', label: 'Role', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'mobileNumber', label: 'Mobile Number', alignRight: false },
   // { id: 'password', label: 'Password', alignRight: false },
@@ -47,6 +48,7 @@ const TABLE_HEAD = [
   { id: 'foCode', label: 'FO Code', alignRight: false },
   { id: 'clusterCode', label: 'Cluster Code', alignRight: false },
   { id: 'villageCode', label: 'Village Code', alignRight: false },
+  { id: 'state', label: 'State', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -86,7 +88,9 @@ function applySortFilter(array, comparator, query) {
         _user.apfLocation,
         _user.foCode,
         _user.clusterCode,
-        _user.villageCode
+        _user.villageCode,
+        _user.state,
+        _user.role
       ].some(field => field && field.toString().toLowerCase().includes(lowerQuery));
     });
   }
@@ -164,7 +168,7 @@ export default function User() {
           <Typography variant="h5">
             User Management
           </Typography>
-          <Button variant="contained" component={RouterLink} to="./createnewuser" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" component={RouterLink} to="./createnewuser" startIcon={<Iconify icon="eva:plus-outline" />}>
             New User
           </Button>
         </Stack>
@@ -197,6 +201,8 @@ export default function User() {
                       password,
                       rmoRegion,
                       villageCode,
+                      state,
+                      role,
                       _id
                     } = row;
                     const isItemSelected = selected.indexOf(_id) !== -1;
@@ -219,17 +225,19 @@ export default function User() {
                             sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.lighter' } }}
                             onClick={() => navigate(`/user/edit/${_id}`)}
                           >
-                            <Iconify icon="eva:edit-fill" width={20} height={20} />
+                            <Iconify icon="eva:edit-outline" width={20} height={20} />
                           </IconButton>
                         </TableCell>
-                        <TableCell component="th" scope="row" size="small">
+                        {/* <TableCell component="th" scope="row" size="small">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            {/* <Avatar alt={name} src={avatarUrl} /> */}
+                            <Avatar alt={name} src={avatarUrl} />
                             <Typography variant="subtitle2" noWrap>
                               {officerName}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </TableCell> */}
+                        <TableCell align="left" size="small">{officerName}</TableCell>
+                        <TableCell align="left" size="small">{role}</TableCell>
                         <TableCell align="left" size="small">{email}</TableCell>
                         <TableCell align="left" size="small">{mobileNumber}</TableCell>
                         {/* <TableCell align="left">{password}</TableCell> */}
@@ -239,6 +247,7 @@ export default function User() {
                         <TableCell align="left" size="small">{foCode}</TableCell>
                         <TableCell align="left" size="small">{clusterCode}</TableCell>
                         <TableCell align="left" size="small">{villageCode}</TableCell>
+                        <TableCell align="left" size="small">{state}</TableCell>
                         {/* <TableCell align="left">
                           <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
                             {sentenceCase(status)}

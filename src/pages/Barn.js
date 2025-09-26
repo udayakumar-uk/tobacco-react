@@ -66,13 +66,13 @@ const TABLE_HEAD = [
   { id: 'constructionType', label: 'Construction Type', alignRight: false, minWidth: 200 },
   { id: 'highYield', label: 'High Yield', alignRight: false },
   { id: 'BarnCond', label: 'Barn Cond', alignRight: false },
-  { id: 'nboundary', label: 'N Boundary', alignRight: false, minWidth: 120 },
-  { id: 'sboundary', label: 'S Boundary', alignRight: false, minWidth: 120 },
-  { id: 'eboundary', label: 'E Boundary', alignRight: false, minWidth: 120 },
-  { id: 'wboundary', label: 'W Boundary', alignRight: false, minWidth: 120 },
+  { id: 'nboundary', label: 'N Boundary', alignRight: false},
+  { id: 'sboundary', label: 'S Boundary', alignRight: false},
+  { id: 'eboundary', label: 'E Boundary', alignRight: false},
+  { id: 'wboundary', label: 'W Boundary', alignRight: false},
   { id: 'constructedYear', label: 'Constructed Year', alignRight: false, minWidth: 200 },
+  { id: 'remarks', label: 'Remarks', alignRight: false },
   // { id: 'status', label: 'Barn Soil', alignRight: false },
-  // { id: 'remarks', label: 'Barn Unit', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -116,16 +116,36 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     const lowerQuery = query.toLowerCase();
     return filter(array, (_user) => {
-      return [
-        _user.officerName,
-        _user.email,
-        _user.mobileNumber,
-        _user.officerId,
+      return [        
+        _user.cropYear,
+        _user.state,
+        _user.district,
+        _user.mandal,
+        _user.code,
+        _user.village,
         _user.rmoRegion,
-        _user.apfLocation,
-        _user.foCode,
+        _user.location,
         _user.clusterCode,
-        _user.villageCode
+        _user.foCode,
+        _user.tbbrno,
+        _user.barnSoil,
+        _user.barnUnit,
+        _user.barnLic,
+        _user.barnSize,
+        _user.barnType,
+        _user.insulation,
+        _user.furnace,
+        _user.fuelUsed,
+        _user.roof,
+        _user.constructionType,
+        _user.highYield,
+        _user.BarnCond,
+        _user.nboundary,
+        _user.sboundary,
+        _user.eboundary,
+        _user.wboundary,
+        _user.constructedYear,
+        _user.remarks
       ].some(field => field && field.toString().toLowerCase().includes(lowerQuery));
     });
   }
@@ -228,8 +248,9 @@ export default function User() {
       console.log('Imported barns:', jsonData);
     } catch (err) {
       setUploadError('Failed to parse file. Please upload a valid Excel file.');
+    } finally{
+      setLoadingSheet(false);
     }
-    setLoadingSheet(false);
   };
 
   return (
@@ -245,7 +266,7 @@ export default function User() {
             variant="contained"
             tabIndex={0}
             disabled={loadingSheet}
-            startIcon={loadingSheet ? <CircularProgress size={20} /> : <Iconify icon="eva:cloud-upload-fill" />}
+            startIcon={loadingSheet ? <CircularProgress size={20} color="inherit" /> : <Iconify icon="eva:cloud-upload-outline" />}
           >
             {loadingSheet ? 'Processing...' : 'Upload Sheet'}
             <VisuallyHiddenInput
@@ -320,6 +341,7 @@ export default function User() {
                       eboundary,
                       wboundary,
                       constructedYear,
+                      remarks,
                       _id
                     } = row;
                     const isItemSelected = selected.indexOf(_id) !== -1;
@@ -336,43 +358,44 @@ export default function User() {
                         {/* <TableCell padding="checkbox">
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, _id)} />
                         </TableCell> */}
-                        <TableCell align="center" size="small" padding='small' sx={{lineHeight: 1.2}}>
+                        <TableCell align="center" size="small" padding='normal' sx={{lineHeight: 1.2}}>
                           {/* <UserMoreMenu /> */}
                           <IconButton
                             sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.lighter' } }}
                             onClick={() => navigate(`/barn/edit/${_id}`)}
                           >
-                            <Iconify icon="eva:edit-fill" width={20} height={20} />
+                            <Iconify icon="eva:edit-outline" width={20} height={20} />
                           </IconButton>
                         </TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{cropYear}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{state}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{district}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{mandal}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{code}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{village}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{rmoRegion}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{location}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{clusterCode}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{foCode}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{tbbrno}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnSoil}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnUnit}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnLic}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnSize}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{barnType}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{insulation}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{furnace}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{fuelUsed}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{roof}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{constructionType}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{highYield}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{BarnCond}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{nboundary}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{sboundary}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{eboundary}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{wboundary}</TableCell>
-                        <TableCell align="left" size="small" padding='small' sx={{lineHeight: 1.2}}>{constructedYear}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{cropYear}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{state}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{district}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{mandal}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{code}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{village}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{rmoRegion}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{location}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{clusterCode}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{foCode}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{tbbrno}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{barnSoil}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{barnUnit}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{barnLic}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{barnSize}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{barnType}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{insulation}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{furnace}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{fuelUsed}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{roof}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{constructionType}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{highYield}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{BarnCond}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{nboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{sboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{eboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{wboundary}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{constructedYear}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{remarks}</TableCell>
                       </TableRow>
                     );
                   })}
