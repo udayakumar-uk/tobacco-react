@@ -1,0 +1,3 @@
+## Base URL
+
+REACT_APP_API_BASE_URL=http://50.17.74.231:4008
