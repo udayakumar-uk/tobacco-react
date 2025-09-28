@@ -41,7 +41,7 @@ export default function EditBarnForm({ barnData, open }) {
 
   const EditBarnSchema = Yup.object().shape({
     cropYear: Yup.string().required('Crop Year is required'),
-    state: Yup.string().required('State is required'),
+    state: Yup.array().min(1, 'Select at least one type').required('State is required'),
     district: Yup.string().required('District is required'),
     mandal: Yup.string().required('Mandal is required'),
     code: Yup.string().required('Code is required'),
@@ -74,7 +74,7 @@ export default function EditBarnForm({ barnData, open }) {
   // Set default values from barnData
   const defaultValues = {
     cropYear: barnData?.cropYear || '',
-    state: barnData?.state?.split(',') || '',
+    state: barnData?.state?.split(',') || [],
     district: barnData?.district || '',
     mandal: barnData?.mandal || '',
     code: barnData?.code || '',

@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePostFetch } from '../../../hooks/usePostFetch';
+import DropDownControl from '../../../components/DropdownControl';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,8 @@ export default function RegisterForm() {
   const theme = useTheme();
 
   const villageCode = ['20001', '20002', '20003', '20004', '20005'];
-  const states = ['AP', 'KA'];
+  const states = ['AP', 'KA'];  
+  const roles = ['FO','FA','SGO','AS','RMO','HQ_AP_KK','HQ_KK'];
   
 
   const RegisterSchema = Yup.object().shape({
@@ -44,16 +46,16 @@ export default function RegisterForm() {
   });
 
   const defaultValues = {
-    officerName: '',
-    role: '',
-    email: '',
-    password: '',
-    mobileNumber: '',
-    officerId: '',
-    rmoRegion: '',
-    apfLocation: '',
-    foCode: '',
-    clusterCode: '',
+    officerName: 'Test',
+    role: [],
+    email: 'test@gmail.com',
+    password: '1234',
+    mobileNumber: '8903322991',
+    officerId: '111',
+    rmoRegion: 'RMO SBS',
+    apfLocation: 'APF20',
+    foCode: '01',
+    clusterCode: '02',
     villageCode: [],
     state: [],
   };
@@ -79,8 +81,11 @@ export default function RegisterForm() {
       villageCode: Array.isArray(formData.villageCode) ? formData.villageCode.join(',') : formData.villageCode,
       state: Array.isArray(formData.state) ? formData.state.join(',') : formData.state,
     };
+    const payload = {
+      data: {...submitData}
+    }
     try {
-      const data = await postData('user/register', submitData);
+      const data = await postData('user/register', payload);
       if (data.status) {
         setShowToast(true);
         setRegData(data.response);
@@ -118,7 +123,8 @@ export default function RegisterForm() {
             <RHFTextField name="officerName" label="Officer Name" />
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
-            <RHFTextField name="role" label="Officer Role" />
+            <DropDownControl controls={control} errors={errors} name="role" label="Officer Role" data={roles}  />
+            {/* <RHFTextField name="role" label="Officer Role" /> */}
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
             <RHFTextField name="email" type="email" label="Email address" />

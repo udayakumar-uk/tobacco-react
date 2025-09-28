@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePutFetch } from '../../../hooks/usePutFetch';
+import DropDownControl from '../../../components/DropdownControl';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ export default function EditUserForm({ userData, open }) {
   
   const villageCode = ['20001', '20002', '20003', '20004', '20005'];
   const states = ['AP', 'KA'];
+  const roles = ['FO','FA','SGO','AS','RMO','HQ_AP_KK','HQ_KK'];
 
   const EditUserSchema = Yup.object().shape({
     officerName: Yup.string().required('Officer name required'),
@@ -93,14 +95,15 @@ export default function EditUserForm({ userData, open }) {
 
   const onSubmitForm = async (formData) => {
     // Convert arrays to comma-separated strings
-    const submitData = {
+    const payload = {
       ...formData,
       'id': id,
       villageCode: Array.isArray(formData.villageCode) ? formData.villageCode.join(',') : formData.villageCode,
       state: Array.isArray(formData.state) ? formData.state.join(',') : formData.state,
     };
+
     try {
-      const data = await putData(`user/update`, submitData);
+      const data = await putData(`user/update`, payload);
       
       if (data.status) {
         setSuccess(true);
@@ -158,7 +161,7 @@ export default function EditUserForm({ userData, open }) {
               <RHFTextField name="officerName" label="Officer Name" />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="role" label="Officer Role" />
+              <DropDownControl controls={control} errors={errors} name="role" label="Officer Role" data={roles}  />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="email" type="email" label="Email address" />

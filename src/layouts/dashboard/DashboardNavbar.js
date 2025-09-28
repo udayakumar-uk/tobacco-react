@@ -45,7 +45,7 @@ DashboardNavbar.propTypes = {
 
 export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
 
-  const { myUser } = useAuth();
+  const { user } = useAuth();
 
   return (
     <RootStyle>
@@ -67,7 +67,7 @@ export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
               textTransform: "capitalize"
             }}
           >
-            {myUser && myUser.officerName ? myUser.officerName : 'Loading...'}
+            {user && user.userDetails.officerName ? user.userDetails.officerName : 'Loading...'}
           </Typography>
         </Box>
 

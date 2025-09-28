@@ -38,6 +38,7 @@ import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashbo
 // custom hook to fetch users
 import { useGetFetch } from '../hooks/useGetFetch';
 import { usePostFetch } from '../hooks/usePostFetch';
+import { useAuth } from '../context/AuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -162,16 +163,35 @@ export default function User() {
   const [importedBarns, setImportedBarns] = useState([]);
   const [loadingSheet, setLoadingSheet] = useState(false);
   const navigate = useNavigate();
+  const [data, setData] = useState([])
   const [success, setSuccess] = useState("");
-  const [postData] = usePostFetch();
+  const [postData, {loading, error}] = usePostFetch();
+
+  const { user } = useAuth();
+  const userDetails = user?.userDetails
+
+  const payload = {
+    "state": userDetails.state,
+    "clusterCode": userDetails.clusterCode,
+    "foCode": userDetails.foCode,
+    "villageCode": userDetails.villageCode,
+    "location": userDetails.apfLocation,
+    "role": userDetails.role
+}
   
   const [fileName, setFileName] = useState('');
   const [uploadError, setUploadError] = useState('');
   
-  const [fetchUsers, { data, loading, error }] = useGetFetch('barn/getList');
+  // const [fetchUsers, { data, loading, error }] = useGetFetch('barn/getList');
 
   useEffect(() => {
-    fetchUsers();
+    const fetchBarnList = async () => {
+      const getAllBarn = await postData('barn/getList', payload);
+      if(getAllBarn.status){
+        setData(getAllBarn.data);
+      }
+    };
+    fetchBarnList();
   }, [importedBarns]);
 
   const handleRequestSort = (event, property) => {
@@ -236,7 +256,12 @@ export default function User() {
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      const barnData = await postData('barn/insert', jsonData);
+
+      const payload = {
+        data: {...jsonData}
+      }
+
+      const barnData = await postData('barn/insert', payload);
       setImportedBarns(jsonData);
       setSuccess(true);
       if (barnData.status) {

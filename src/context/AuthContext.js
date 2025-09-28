@@ -1,20 +1,16 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
 import { API_BASE_URL } from '../config';
 import { useGetById } from '../hooks/useGetById';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [myUser, setMyUser] = useState(null);
-  const { userData, fetchUserById } = useGetById('user/getUserById');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   // load user from localStorage on refresh
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-    const storedMyUser = localStorage.getItem("myUser");
-    if (storedMyUser) setMyUser(JSON.parse(storedMyUser));
+  useLayoutEffect(() => {
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   const login = async (credentials) => {
@@ -32,15 +28,6 @@ export const AuthProvider = ({ children }) => {
     if (data.token) {
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
-      // Fetch user details and update myUser
-      const userDetails = await fetchUserById(data.userId, data.token);
-      if (userDetails.status) {
-        setMyUser(userDetails.data);
-        localStorage.setItem('myUser', JSON.stringify(userDetails.data));
-      } else {
-        setMyUser(null);
-        localStorage.removeItem('myUser');
-      }
     }
     return data;
   };
@@ -65,16 +52,14 @@ export const AuthProvider = ({ children }) => {
     if (data.status === 1) {
       // clear user from context and localStorage
       setUser(null);
-      setMyUser(null);
       localStorage.removeItem("user");
-      localStorage.removeItem("myUser");
     }
     
     return data;
   };
 
   return (
-    <AuthContext.Provider value={{ user, myUser, userData, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

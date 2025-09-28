@@ -38,7 +38,7 @@ export default function AccountPopover({ setLoad }) {
 
   const navigate = useNavigate();
 
-  const { logout, myUser } = useAuth();
+  const { logout, user } = useAuth();
 
   const [open, setOpen] = useState(null);
 
@@ -66,7 +66,6 @@ export default function AccountPopover({ setLoad }) {
         console.error("Logout error:", error);
 
         localStorage.removeItem('user');
-        localStorage.removeItem('myUser');
         navigate('/login');
         window.location.reload();
     }
@@ -111,10 +110,10 @@ export default function AccountPopover({ setLoad }) {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap sx={{ textTransform: "capitalize" }}>
-            {myUser && myUser.officerName ? myUser.officerName : 'Loading...'}
+            {user && user.userDetails.officerName ? user.userDetails.officerName : 'Loading...'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {myUser && myUser.email ? myUser.email : ''}
+            {user && user.userDetails.email ? user.userDetails.email : ''}
           </Typography>
         </Box>
 

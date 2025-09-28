@@ -17,7 +17,7 @@ export function usePostFetch() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user?.token}`,
         },
-        body: JSON.stringify({ data: payload }),
+        body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error('Failed to fetch data');
       const data = await response.json();
