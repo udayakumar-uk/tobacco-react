@@ -4,12 +4,9 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 // components
 import Iconify from '../../components/Iconify';
-import account from '../../_mock/account';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
-import NotificationsPopover from './NotificationsPopover';
 
 import { useAuth } from '../../context/AuthContext';
 // ----------------------------------------------------------------------

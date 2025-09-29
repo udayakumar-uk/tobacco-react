@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import { Stack, Grid, Box, Alert, Snackbar, CircularProgress, OutlinedInput, Button, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -46,16 +46,16 @@ export default function RegisterForm() {
   });
 
   const defaultValues = {
-    officerName: 'Test',
-    role: [],
-    email: 'test@gmail.com',
-    password: '1234',
-    mobileNumber: '8903322991',
-    officerId: '111',
-    rmoRegion: 'RMO SBS',
-    apfLocation: 'APF20',
-    foCode: '01',
-    clusterCode: '02',
+    officerName: '',
+    role: '',
+    email: '',
+    password: '',
+    mobileNumber: '',
+    officerId: '',
+    rmoRegion: '',
+    apfLocation: '',
+    foCode: '',
+    clusterCode: '',
     villageCode: [],
     state: [],
   };
@@ -99,12 +99,38 @@ export default function RegisterForm() {
     }
   };
 
+  const handleBack = (event) => {
+    event.preventDefault();
+    navigate(-1);
+  };
+
   return (
   <>    
     {error && (
       <Alert severity="error" variant="filled" sx={{ my: 4 }}>
         {error}
       </Alert>
+    )}
+
+    {(isSubmitting) && (
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10,
+          backgroundColor: alpha(theme.palette.background.default, 0.50)
+        }}
+      >
+        <CircularProgress size={48} />
+      </Box>
     )}
 
     <Snackbar open={showToast} autoHideDuration={30000} onClose={() => setShowToast(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
@@ -123,8 +149,13 @@ export default function RegisterForm() {
             <RHFTextField name="officerName" label="Officer Name" />
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
-            <DropDownControl controls={control} errors={errors} name="role" label="Officer Role" data={roles}  />
-            {/* <RHFTextField name="role" label="Officer Role" /> */}
+            <DropDownControl
+              controls={control}
+              errors={errors}
+              name="role"
+              label="Officer Role"
+              data={roles}
+            />
           </Grid>
           <Grid item xs={12} md={4} sm={6}>
             <RHFTextField name="email" type="email" label="Email address" />
@@ -215,7 +246,11 @@ export default function RegisterForm() {
       </Stack>
 
       <Box sx={{ mt: 3, textAlign: 'right' }}>
-        <LoadingButton fullWidth={false} size="large" type="submit" variant="contained" loading={isSubmitting}>
+        <Button onClick={()=> reset()} sx={{ mr: 2}}>Reset</Button>
+        <Button onClick={handleBack} sx={{ mr: 2}} fullWidth={false} type="button" variant="outlined" disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <LoadingButton fullWidth={false} type="submit" variant="contained" loading={isSubmitting}>
           Create User
         </LoadingButton>
       </Box>

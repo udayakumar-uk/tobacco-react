@@ -1,17 +1,33 @@
 import { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
 import { API_BASE_URL } from '../config';
-import { useGetById } from '../hooks/useGetById';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-
+  const [userName, setUserName] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userNumber, setUserNumber] = useState(null);
   // load user from localStorage on refresh
   useLayoutEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // if (storedUser) setUser(JSON.parse(storedUser));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
+
+  // Store user in localStorage and update state
+  const setUserLocally = (userObj) => {
+    if (userObj) {
+      localStorage.setItem('user', JSON.stringify(userObj));
+      setUser(userObj);
+    }
+  }
+
+    // Get user in localStorage
+  const getUserLocally = () => {
+    const getUser = JSON.parse(localStorage.getItem('user'));
+    return getUser
+  }
+
 
   const login = async (credentials) => {
     // Login with API
@@ -59,7 +75,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ 
+        user, 
+        login, 
+        logout, 
+        setUserLocally, 
+        getUserLocally,
+        setUserName,
+        setUserEmail,
+        setUserNumber,
+        userName,
+        userEmail,
+        userNumber
+      }}>
       {children}
     </AuthContext.Provider>
   );

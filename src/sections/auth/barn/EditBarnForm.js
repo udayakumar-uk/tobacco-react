@@ -6,7 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import {Stack, Grid, Box, Alert, Snackbar, Button, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -37,11 +37,11 @@ export default function EditBarnForm({ barnData, open }) {
   const burnHigh = ["Y", "N"];
   const burnCond = ["Fit", "Unfit","No Structure"];
 
-  const DropDownSchema = ['state', 'barnType', 'insulation', 'furnace', 'fuelUsed', 'roof', 'constructionType', 'highYield', 'BarnCond']
+  const DropDownSchema = ['photos', 'state', 'barnType', 'insulation', 'furnace', 'fuelUsed', 'roof', 'constructionType', 'highYield', 'BarnCond']
 
   const EditBarnSchema = Yup.object().shape({
     cropYear: Yup.string().required('Crop Year is required'),
-    state: Yup.array().min(1, 'Select at least one type').required('State is required'),
+    state: Yup.string().required('State is required'),
     district: Yup.string().required('District is required'),
     mandal: Yup.string().required('Mandal is required'),
     code: Yup.string().required('Code is required'),
@@ -55,26 +55,26 @@ export default function EditBarnForm({ barnData, open }) {
     barnUnit: Yup.string().required('Barn Unit is required'),
     barnLic: Yup.string().required('Barn Lic is required'),
     barnSize: Yup.string().required('Barn Size is required'),
-    barnType: Yup.array().min(1, 'Select at least one type').required('Barn Type is required'),
-    insulation: Yup.array().min(1, 'Select at least one insulation').required('Insulation is required'),
-    furnace: Yup.array().min(1, 'Select at least one furnace').required('Furnace is required'),
-    fuelUsed: Yup.array().min(1, 'Select at least one fuel').required('Fuel Used is required'),
-    roof: Yup.array().min(1, 'Select at least one roof').required('Roof is required'),
-    constructionType: Yup.array().min(1, 'Select at least one type').required('Construction Type is required'),
-    highYield: Yup.array().min(1, 'Select at least one highyield').required('High Yield is required'),
-    BarnCond: Yup.array().min(1, 'Select at least one condition').required('Barn Cond is required'),
+    barnType: Yup.string().required('Barn Type is required'),
+    insulation: Yup.string().required('Insulation is required'),
+    furnace: Yup.string().required('Furnace is required'),
+    fuelUsed: Yup.string().required('Fuel Used is required'),
+    roof: Yup.string().required('Roof is required'),
+    constructionType: Yup.string().required('Construction Type is required'),
+    highYield: Yup.string().required('High Yield is required'),
+    BarnCond: Yup.string().required('Barn Cond is required'),
     nboundary: Yup.string().required('N Boundary is required'),
     sboundary: Yup.string().required('S Boundary is required'),
     eboundary: Yup.string().required('E Boundary is required'),
     wboundary: Yup.string().required('W Boundary is required'),
     constructedYear: Yup.string().required('Constructed Year is required'),
-    remarks: Yup.string().required('Remarks is required'),
+    // remarks: Yup.string().required('Remarks is required'),
   });
 
   // Set default values from barnData
   const defaultValues = {
     cropYear: barnData?.cropYear || '',
-    state: barnData?.state?.split(',') || [],
+    state: barnData?.state || [],
     district: barnData?.district || '',
     mandal: barnData?.mandal || '',
     code: barnData?.code || '',
@@ -88,20 +88,22 @@ export default function EditBarnForm({ barnData, open }) {
     barnUnit: barnData?.barnUnit || '',
     barnLic: barnData?.barnLic || '',
     barnSize: barnData?.barnSize || '',
-    barnType: barnData?.barnType?.split(',') || [],
-    insulation: barnData?.insulation?.split(',') || [],
-    furnace: barnData?.furnace?.split(',') || [],
-    fuelUsed: barnData?.fuelUsed?.split(',') || [],
-    roof: barnData?.roof?.split(',') || [],
-    constructionType: barnData?.constructionType?.split(',') || [],
-    highYield: barnData?.highYield?.split(',') || [],
-    BarnCond: barnData?.BarnCond?.split(',') || [],
+    barnType: barnData?.barnType || [],
+    insulation: barnData?.insulation || [],
+    furnace: barnData?.furnace || [],
+    fuelUsed: barnData?.fuelUsed || [],
+    roof: barnData?.roof || [],
+    constructionType: barnData?.constructionType || [],
+    highYield: barnData?.highYield || [],
+    BarnCond: barnData?.BarnCond || [],
     nboundary: barnData?.nboundary || '',
     sboundary: barnData?.sboundary || '',
     eboundary: barnData?.eboundary || '',
     wboundary: barnData?.wboundary || '',
     constructedYear: barnData?.constructedYear || '',
     remarks: barnData?.remarks || '',
+    geoLocation: barnData?.geoLocation || '',
+    photos: barnData?.photos || [],
   };
 
   const methods = useForm({
@@ -123,7 +125,11 @@ export default function EditBarnForm({ barnData, open }) {
       Object.keys(defaultValues).forEach((key) => {
         if (DropDownSchema.includes(key)) {
           if(barnData[key]){
-            setValue(key, defaultValues[key]);
+            if(key === 'photos'){
+                setValue(key, JSON.parse(defaultValues[key]));
+            }else{
+                setValue(key, defaultValues[key]);
+            }
           }else {
             setValue(key, []);
           }
@@ -144,7 +150,11 @@ export default function EditBarnForm({ barnData, open }) {
 
     DropDownSchema.forEach((field) => {
       if (Array.isArray(submitData[field])) {
-        submitData[field] = submitData[field].join(',');
+        if(field === 'photos'){
+            submitData[field] = JSON.stringify(submitData[field]);
+        }else{
+            submitData[field] = submitData[field].join(',');
+        }
       }
     });
 
@@ -162,6 +172,11 @@ export default function EditBarnForm({ barnData, open }) {
       setError("Update failed");
     }
   };
+
+    const handleBack = (event) => {
+        event.preventDefault();
+        navigate(-1);
+    };
 
   return (
     <>
@@ -290,12 +305,91 @@ export default function EditBarnForm({ barnData, open }) {
               <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="remarks" label="Remarks" />
               </Grid>
+              <Grid item xs={12} md={4} sm={6}>
+                <RHFTextField name="geoLocation" label="GEO Location" />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Controller
+                  name="photos"
+                  control={control}
+                  render={({ field: { value = [], onChange } }) => {
+                    // Helper to convert File to base64
+                    const fileToBase64 = file => new Promise((resolve, reject) => {
+                      const reader = new FileReader();
+                      reader.onload = () => resolve(reader.result);
+                      reader.onerror = reject;
+                      reader.readAsDataURL(file);
+                    });
+
+                    const handleFiles = async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      const base64Files = await Promise.all(
+                        files.map(async (file) => {
+                          const base64 = await fileToBase64(file);
+                          return { base64, name: file.name };
+                        })
+                      );
+                      onChange([...(value || []), ...base64Files]);
+                    };
+
+                    const handleRemove = (idx) => {
+                      const newArr = [...value];
+                      newArr.splice(idx, 1);
+                      onChange(newArr);
+                    };
+
+                    return (
+                      <Box>
+                        <Button
+                          variant="outlined"
+                          component="label"
+                          size="large"
+                          startIcon={<Iconify icon="eva:cloud-upload-outline" />}
+                          sx={{ mb: 2 }}
+                        >
+                          Upload Photos
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            hidden
+                            onChange={handleFiles}
+                          />
+                        </Button>
+                        <Stack direction="row" spacing={2} flexWrap="wrap">
+                          {(value || []).map((file, idx) => (
+                            <Box key={file.base64 || file.name || idx} sx={{ position: 'relative', width: 100, height: 100, mb: 1 }}>
+                              <img
+                                src={file.base64 || (typeof file === 'string' ? file : '')}
+                                alt={file.name || `photo-${idx}`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #ccc' }}
+                              />
+                              <Button
+                                size="medium"
+                                color="error"
+                                onClick={() => handleRemove(idx)}
+                                sx={{ position: 'absolute', backgroundColor: 'error.lighter', top: 2, right: 2, minWidth: 0, p: '5px', borderRadius: '50%' }}
+                              >
+                                <Iconify icon="eva:trash-2-outline" width={16} height={16} />
+                              </Button>
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                    );
+                  }}
+                />
+              </Grid>
             
           </Grid>
         </Stack>
 
         <Box sx={{ mt: 3, textAlign: 'right' }}>
-          <LoadingButton fullWidth={false} size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <Button onClick={handleBack} sx={{ mr: 2}} fullWidth={false} type="button" variant="outlined" disabled={isSubmitting}>
+            Cancel
+            </Button>
+          <LoadingButton fullWidth={false} type="submit" variant="contained" loading={isSubmitting}>
             Update Barn
           </LoadingButton>
         </Box>

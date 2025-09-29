@@ -26,7 +26,8 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2),
+  marginLeft: '1rem'
+  // margin: theme.spacing(2, 0, 2, 2),
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -36,7 +37,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: theme.spacing(12, 0),
+  padding: theme.spacing(10, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -51,9 +52,9 @@ export default function Login() {
       <RootStyle>
         {mdUp && (
           <SectionStyle>
-            <Logo disabledLink={'true'} width={300} sx={{ p: 3 }} />
+            <Logo disabledLink={'true'} width={300} sx={{ p: 3, margin: 'auto' }} />
 
-            <Typography variant="h3" sx={{ px: 5}}> Hi, Welcome Back </Typography>
+            {/* <Typography variant="h3" sx={{ px: 5}}> Hi, Welcome Back </Typography> */}
             <img src="/static/illustrations/Authentication.svg" alt="login" />
           </SectionStyle>
         )}

@@ -6,18 +6,19 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import { Stack, Grid, Box, Alert, Snackbar, Button, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePutFetch } from '../../../hooks/usePutFetch';
 import DropDownControl from '../../../components/DropdownControl';
+import {useAuth} from '../../../context/AuthContext';
 
 // ----------------------------------------------------------------------
 
 
-export default function EditUserForm({ userData, open }) {
+export default function EditUserForm({ userData, open, profileId }) {
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -25,6 +26,8 @@ export default function EditUserForm({ userData, open }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [updateData, setupdateData] = useState("");
+  const { setUserName, setUserEmail, setUserNumber } = useAuth();
+
   const [putData, { loading: updateLoading }] = usePutFetch();
   
   const villageCode = ['20001', '20002', '20003', '20004', '20005'];
@@ -49,7 +52,7 @@ export default function EditUserForm({ userData, open }) {
   // Set default values from userData
   const defaultValues = {
     officerName: userData?.officerName || '',
-    role: userData?.role || '',
+    role: userData?.role?.split(',') || '',
     email: userData?.email || '',
     password: '', // Don't prefill password
     mobileNumber: userData?.mobileNumber || '',
@@ -92,12 +95,11 @@ export default function EditUserForm({ userData, open }) {
     }
   }, [userData]);
 
-
   const onSubmitForm = async (formData) => {
     // Convert arrays to comma-separated strings
     const payload = {
       ...formData,
-      'id': id,
+      'id': id ?? profileId,
       villageCode: Array.isArray(formData.villageCode) ? formData.villageCode.join(',') : formData.villageCode,
       state: Array.isArray(formData.state) ? formData.state.join(',') : formData.state,
     };
@@ -115,6 +117,12 @@ export default function EditUserForm({ userData, open }) {
     } catch (err) {
       setError("Update failed");
     }
+  };
+
+  
+  const handleBack = (event) => {
+      event.preventDefault();
+      navigate(-1);
   };
 
   return (
@@ -158,16 +166,20 @@ export default function EditUserForm({ userData, open }) {
         <Stack spacing={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="officerName" label="Officer Name" />
+              <RHFTextField
+                name="officerName"
+                label="Officer Name"
+                onInput={e => setUserName(e.target.value)}
+              />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
               <DropDownControl controls={control} errors={errors} name="role" label="Officer Role" data={roles}  />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="email" type="email" label="Email address" />
+              <RHFTextField name="email" type="email" label="Email address" onInput={e => setUserEmail(e.target.value)} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="mobileNumber" label="Mobile Number" />
+              <RHFTextField name="mobileNumber" label="Mobile Number" onInput={e => setUserNumber(e.target.value)}/>
             </Grid>
             {/* <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="password" label="Password" />
@@ -252,7 +264,10 @@ export default function EditUserForm({ userData, open }) {
         </Stack>
 
         <Box sx={{ mt: 3, textAlign: 'right' }}>
-          <LoadingButton fullWidth={false} size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <Button onClick={handleBack} sx={{ mr: 2}} fullWidth={false} type="button" variant="outlined" disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <LoadingButton fullWidth={false} type="submit" variant="contained" loading={isSubmitting}>
             Update User
           </LoadingButton>
         </Box>

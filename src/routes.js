@@ -12,6 +12,7 @@ import NotFound from './pages/Page404';
 import CreateNewUser from './pages/CreateNewUser';
 import EditUser from './pages/EditUser';
 import EditBarn from './pages/EditBarn';
+import Profile from './pages/Profile';
 
 import { useAuth } from './context/AuthContext';
 // ----------------------------------------------------------------------
@@ -40,6 +41,13 @@ export default function Router() {
         { path: 'edit/:id', element: <EditBarn /> }
       ]
     },
+    { path: '/profile',
+      element: <DashboardLayout />, 
+      children: [
+        { path: '', element: <Profile /> }
+      ]
+    },
+
     { path: '*', element: <NotFound /> },
   ]);
 }
