@@ -51,7 +51,7 @@ const TABLE_HEAD = [
   { id: 'code', label: 'Code ', alignRight: false },
   { id: 'village', label: 'Village', alignRight: false },
   { id: 'rmoRegion', label: 'RMO Region', alignRight: false },
-  { id: 'location', label: 'Location', alignRight: false },
+  { id: 'location', label: 'APF Location', alignRight: false },
   { id: 'clusterCode', label: 'Cluster Code', alignRight: false },
   { id: 'foCode', label: 'FO Code', alignRight: false },
   { id: 'tbbrno', label: 'TBBR No', alignRight: false, minWidth: 100 },
@@ -73,6 +73,7 @@ const TABLE_HEAD = [
   { id: 'wboundary', label: 'W Boundary', alignRight: false},
   { id: 'constructedYear', label: 'Constructed Year', alignRight: false, minWidth: 200 },
   { id: 'remarks', label: 'Remarks', alignRight: false },
+  { id: 'geolocation', label: 'GEO Location', alignRight: false },
   // { id: 'status', label: 'Barn Soil', alignRight: false },
 ];
 
@@ -146,7 +147,8 @@ function applySortFilter(array, comparator, query) {
         _user.eboundary,
         _user.wboundary,
         _user.constructedYear,
-        _user.remarks
+        _user.remarks,
+        _user.geolocation
       ].some(field => field && field.toString().toLowerCase().includes(lowerQuery));
     });
   }
@@ -307,7 +309,7 @@ export default function User() {
 
         <Card>
 
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} showFilter="true"/>
           
           {success && (
             <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
@@ -367,6 +369,7 @@ export default function User() {
                       wboundary,
                       constructedYear,
                       remarks,
+                      geolocation,
                       _id
                     } = row;
                     const isItemSelected = selected.indexOf(_id) !== -1;
@@ -421,6 +424,7 @@ export default function User() {
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{wboundary}</TableCell>
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{constructedYear}</TableCell>
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{remarks}</TableCell>
+                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{geolocation}</TableCell>
                       </TableRow>
                     );
                   })}

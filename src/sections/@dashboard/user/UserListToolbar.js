@@ -39,7 +39,7 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, showFilter = false }) {
   return (
     <RootStyle
       sx={{
@@ -72,7 +72,8 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>
-      ) : (
+      ) : ( 
+        showFilter && 
         <Tooltip title="Filter list">
           <IconButton>
             <Iconify icon="ic:round-filter-list" />

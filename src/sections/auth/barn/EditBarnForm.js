@@ -102,7 +102,7 @@ export default function EditBarnForm({ barnData, open }) {
     wboundary: barnData?.wboundary || '',
     constructedYear: barnData?.constructedYear || '',
     remarks: barnData?.remarks || '',
-    geoLocation: barnData?.geoLocation || '',
+    geolocation: barnData?.geolocation || '',
     photos: barnData?.photos || [],
   };
 
@@ -306,7 +306,7 @@ export default function EditBarnForm({ barnData, open }) {
                 <RHFTextField name="remarks" label="Remarks" />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="geoLocation" label="GEO Location" />
+                <RHFTextField name="geolocation" label="GEO Location" />
               </Grid>
 
               <Grid item xs={12} md={6}>
