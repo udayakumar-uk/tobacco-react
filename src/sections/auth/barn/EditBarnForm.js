@@ -6,18 +6,20 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import {Stack, Grid, Box, Alert, Snackbar, Button, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import {Stack, Grid, Box, Button, CircularProgress, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePutFetch } from '../../../hooks/usePutFetch';
 import DropDownControl from '../../../components/DropdownControl';
+import AlertComponent from '../../../components/AlertComponent';
 
 // ----------------------------------------------------------------------
 
 
 export default function EditBarnForm({ barnData, open }) {
+  const [geoLoading, setGeoLoading] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -74,7 +76,7 @@ export default function EditBarnForm({ barnData, open }) {
   // Set default values from barnData
   const defaultValues = {
     cropYear: barnData?.cropYear || '',
-    state: barnData?.state || [],
+    state: barnData?.state || '',
     district: barnData?.district || '',
     mandal: barnData?.mandal || '',
     code: barnData?.code || '',
@@ -88,14 +90,14 @@ export default function EditBarnForm({ barnData, open }) {
     barnUnit: barnData?.barnUnit || '',
     barnLic: barnData?.barnLic || '',
     barnSize: barnData?.barnSize || '',
-    barnType: barnData?.barnType || [],
-    insulation: barnData?.insulation || [],
-    furnace: barnData?.furnace || [],
-    fuelUsed: barnData?.fuelUsed || [],
-    roof: barnData?.roof || [],
-    constructionType: barnData?.constructionType || [],
-    highYield: barnData?.highYield || [],
-    BarnCond: barnData?.BarnCond || [],
+    barnType: barnData?.barnType || '',
+    insulation: barnData?.insulation || '',
+    furnace: barnData?.furnace || '',
+    fuelUsed: barnData?.fuelUsed || '',
+    roof: barnData?.roof || '',
+    constructionType: barnData?.constructionType || '',
+    highYield: barnData?.highYield || '',
+    BarnCond: barnData?.BarnCond || '',
     nboundary: barnData?.nboundary || '',
     sboundary: barnData?.sboundary || '',
     eboundary: barnData?.eboundary || '',
@@ -140,6 +142,28 @@ export default function EditBarnForm({ barnData, open }) {
     }
   }, [barnData]);
 
+  const getCurrPositions = () => {
+    setGeoLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const coords = `${pos.coords.latitude},${pos.coords.longitude}`;
+          methods.setValue('geolocation', coords);
+          setGeoLoading(false);
+        },
+        err => {
+          alert(`Unable to fetch location: ${err.message}`);
+          setGeoLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by your browser.');
+      setGeoLoading(false);
+    }
+  };
 
   const onSubmitForm = async (formData) => {
     // Convert dropdown arrays to comma-separated strings
@@ -181,19 +205,8 @@ export default function EditBarnForm({ barnData, open }) {
   return (
     <>
       
-      {success && (
-        <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
-          <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
-            {updateData.response}
-          </Alert>
-        </Snackbar>
-      )}
-      {error && (
-        <Alert severity="error" variant="filled" sx={{ my: 2 }}>
-          {error}
-        </Alert>
-      )}
-
+      <AlertComponent success={success} successMsg={updateData.response} error={error} errorMsg={error} setSuccess={setSuccess} setError={setError}  />
+      
       {(open || isSubmitting) && (
         <Box
           sx={{
@@ -219,46 +232,46 @@ export default function EditBarnForm({ barnData, open }) {
         <Stack spacing={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="cropYear" label="Crop Year" />
+              <RHFTextField name="cropYear" label="Crop Year" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
                 <DropDownControl controls={control} errors={errors} name="state" label="State" data={states}  />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="district" label="District" />
+              <RHFTextField name="district" label="District" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="mandal" label="Mandal" />
+              <RHFTextField name="mandal" label="Mandal" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="code" label="Code" />
+              <RHFTextField name="code" label="Code" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-              <RHFTextField name="village" label="Village" />
+              <RHFTextField name="village" label="Village" InputProps={{ readOnly: true }} />
             </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="rmoRegion" label="RMO Region" />
+                <RHFTextField name="rmoRegion" label="RMO Region" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="location" label="Location" />
+                <RHFTextField name="location" label="Location" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="clusterCode" label="Cluster Code" />
+                <RHFTextField name="clusterCode" label="Cluster Code" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="foCode" label="FO Code" />
+                <RHFTextField name="foCode" label="FO Code" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="tbbrno" label="TBBR No" />
+                <RHFTextField name="tbbrno" label="TBBR No" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="barnSoil" label="Barn Soil" />
+                <RHFTextField name="barnSoil" label="Barn Soil" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="barnUnit" label="Barn Unit" />
+                <RHFTextField name="barnUnit" label="Barn Unit" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="barnLic" label="Barn Lic" />
+                <RHFTextField name="barnLic" label="Barn Lic" InputProps={{ readOnly: true }} />
               </Grid>
               <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="barnSize" label="Barn Size" />
@@ -302,13 +315,25 @@ export default function EditBarnForm({ barnData, open }) {
               <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="constructedYear" label="Constructed Year" />
               </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+              <Grid item xs={12} md={8}>
                 <RHFTextField name="remarks" label="Remarks" />
               </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="geolocation" label="GEO Location" />
-              </Grid>
 
+              <Grid item xs={12} md={6}>
+                <Box sx={{position: 'relative'}}>
+                  <RHFTextField name="geolocation" label="GEO Location" fullWidth />
+                  <Button
+                    variant="outlined"
+                    startIcon={geoLoading ? <CircularProgress size={18} /> : <Iconify icon="mdi:crosshairs-gps" />}
+                    onClick={getCurrPositions}
+                    sx={{whiteSpace: 'nowrap', position: 'absolute', top: 4, right: 4}}
+                    disabled={geoLoading}
+                    size="large"
+                  >
+                    {geoLoading ? 'Getting...' : 'Get Location'}
+                  </Button>
+                </Box>
+              </Grid>
               <Grid item xs={12} md={6}>
                 <Controller
                   name="photos"
@@ -346,7 +371,8 @@ export default function EditBarnForm({ barnData, open }) {
                           component="label"
                           size="large"
                           startIcon={<Iconify icon="eva:cloud-upload-outline" />}
-                          sx={{ mb: 2 }}
+                          sx={{ mb: 2, py: 3.3 }}
+                          fullWidth
                         >
                           Upload Photos
                           <input
@@ -359,7 +385,7 @@ export default function EditBarnForm({ barnData, open }) {
                         </Button>
                         <Stack direction="row" spacing={2} flexWrap="wrap">
                           {(value || []).map((file, idx) => (
-                            <Box key={file.base64 || file.name || idx} sx={{ position: 'relative', width: 100, height: 100, mb: 1 }}>
+                            <Box key={file.base64 || file.name || idx} sx={{ position: 'relative', width: 80, height: 80, mb: 1 }}>
                               <img
                                 src={file.base64 || (typeof file === 'string' ? file : '')}
                                 alt={file.name || `photo-${idx}`}

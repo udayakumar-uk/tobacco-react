@@ -4,12 +4,13 @@ import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
-import DashboardSidebar from './DashboardSidebar';
+import BottomNav from './BottomNav';
+// import DashboardSidebar from './DashboardSidebar';
 import BackDrop from '../../components/BackDrop';
 
 // ----------------------------------------------------------------------
 
-const APP_BAR_MOBILE = 64;
+const APP_BAR_MOBILE = 70;
 const APP_BAR_DESKTOP = 92;
 
 const RootStyle = styled('div')({
@@ -22,10 +23,11 @@ const MainStyle = styled('div')(({ theme }) => ({
   flexGrow: 1,
   overflow: 'auto',
   minHeight: '100%',
-  paddingTop: APP_BAR_MOBILE + 24,
-  paddingBottom: theme.spacing(5),
+  paddingTop: APP_BAR_MOBILE + 10,
+  paddingBottom: APP_BAR_MOBILE + 20,
   [theme.breakpoints.up('lg')]: {
-    paddingTop: 90,
+    paddingTop: 80,
+    paddingBottom: 80,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2)
   }
@@ -41,10 +43,11 @@ export default function DashboardLayout({ children }) {
     <RootStyle>
       <BackDrop open={load}/>
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} setLoad={setLoad}/>
-      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+      {/* <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} /> */}
       <MainStyle>
         <Outlet />
       </MainStyle>
+      <BottomNav  />
     </RootStyle>
   );
 }

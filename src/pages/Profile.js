@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { styled } from '@mui/material/styles';
-import { Card, Stack, Box, Avatar, Link, Container, Typography, Breadcrumbs, Snackbar, Alert } from '@mui/material';
+import { Card, Stack, Box, Avatar, Link, Container, Typography } from '@mui/material';
 import Page from '../components/Page';
 import { useGetById } from '../hooks/useGetById';
 import EditUserForm from '../sections/auth/register/EditUserForm';

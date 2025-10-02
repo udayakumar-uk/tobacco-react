@@ -12,8 +12,10 @@ import {
   Avatar,
   Button,
   Checkbox,
+  Popover,
   TableRow,
   TableBody,
+  TextField,
   TableCell,
   Container,
   Typography,
@@ -22,14 +24,9 @@ import {
   CircularProgress,
   Box,
   IconButton,
-  colors,
-  Snackbar,
-  Alert
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
 // components
 import Page from '../components/Page';
-import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
@@ -39,6 +36,7 @@ import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashbo
 import { useGetFetch } from '../hooks/useGetFetch';
 import { usePostFetch } from '../hooks/usePostFetch';
 import { useAuth } from '../context/AuthContext';
+import AlertComponent from '../components/AlertComponent';
 
 // ----------------------------------------------------------------------
 
@@ -155,7 +153,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
+export default function Barn() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -168,7 +166,15 @@ export default function User() {
   const [data, setData] = useState([])
   const [success, setSuccess] = useState("");
   const [postData, {loading, error}] = usePostFetch();
-
+  const [fileName, setFileName] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  // Advanced filter state
+  const [advancedFilter, setAdvancedFilter] = useState({
+    rmoRegion: '',
+    location: '',
+    clusterCode: '',
+    villageCode: ''
+  });
   const { user } = useAuth();
   const userDetails = user?.userDetails
 
@@ -181,8 +187,6 @@ export default function User() {
     "role": userDetails.role
 }
   
-  const [fileName, setFileName] = useState('');
-  const [uploadError, setUploadError] = useState('');
   
   // const [fetchUsers, { data, loading, error }] = useGetFetch('barn/getList');
 
@@ -241,7 +245,21 @@ export default function User() {
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-  const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
+  // Advanced filter logic
+  const filteredUsers = applySortFilter(
+    data.filter(row => {
+      // If no advanced filter, show all
+      if (!advancedFilter.rmoRegion && !advancedFilter.location && !advancedFilter.clusterCode && !advancedFilter.villageCode) return true;
+      // All filters must match if set
+      if (advancedFilter.rmoRegion && (!row.rmoRegion || !row.rmoRegion.toLowerCase().includes(advancedFilter.rmoRegion.toLowerCase()))) return false;
+      if (advancedFilter.location && (!row.location || !row.location.toLowerCase().includes(advancedFilter.location.toLowerCase()))) return false;
+      if (advancedFilter.clusterCode && (!row.clusterCode || !row.clusterCode.toLowerCase().includes(advancedFilter.clusterCode.toLowerCase()))) return false;
+      if (advancedFilter.villageCode && (!row.code || !row.code.toLowerCase().includes(advancedFilter.villageCode.toLowerCase()))) return false;
+      return true;
+    }),
+    getComparator(order, orderBy),
+    filterName
+  );
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -284,10 +302,7 @@ export default function User() {
     <Page title="Barn">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
-          <Typography variant="h5">
-            Barn Management
-          </Typography>
-          
+          <Typography variant="h5">Barn Management</Typography>
           <Button
             component="label"
             variant="contained"
@@ -304,27 +319,22 @@ export default function User() {
               disabled={loadingSheet}
             />
           </Button>
-        
         </Stack>
 
         <Card>
 
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} showFilter="true"/>
+          <UserListToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+            showFilter="true"
+            advancedFilter={advancedFilter}
+            setAdvancedFilter={setAdvancedFilter}
+          />
           
-          {success && (
-            <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
-              <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
-                Imported Successfully
-              </Alert>
-            </Snackbar>
-          )}
 
-          {uploadError && (
-            <Alert severity="error" variant="filled" sx={{ my: 2 }}>
-              {uploadError}
-            </Alert>
-          )}
-
+          <AlertComponent success={success} successMsg="Imported Successfully" error={uploadError} errorMsg={uploadError} setSuccess={setSuccess} setError={setUploadError}  />
+        
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -438,7 +448,7 @@ export default function User() {
                 {loading && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={10} sx={{ py: 3 }}>
+                      <TableCell align="center" colSpan={4} sx={{ py: 3 }}>
                         <Typography gutterBottom align="center" variant="subtitle1">
                             <CircularProgress size="30px" />
                             <Box>Loading...</Box>
@@ -451,7 +461,7 @@ export default function User() {
                 {isUserNotFound && !loading && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={10} sx={{ py: 3 }}>
+                      <TableCell align="center" colSpan={4} sx={{ py: 3 }}>
                         <SearchNotFound searchQuery={filterName} />
                       </TableCell>
                     </TableRow>

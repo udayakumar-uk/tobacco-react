@@ -6,13 +6,14 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, CircularProgress, OutlinedInput, Button, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import { Stack, Grid, Box, CircularProgress, OutlinedInput, Button, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePostFetch } from '../../../hooks/usePostFetch';
 import DropDownControl from '../../../components/DropdownControl';
+import AlertComponent from '../../../components/AlertComponent';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +23,7 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [regData, setRegData] = useState(false);
   const [error, setError] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  const [success, setSuccess] = useState(false);
   const theme = useTheme();
 
   const villageCode = ['20001', '20002', '20003', '20004', '20005'];
@@ -87,7 +88,7 @@ export default function RegisterForm() {
     try {
       const data = await postData('user/register', payload);
       if (data.status) {
-        setShowToast(true);
+        setSuccess(true);
         setRegData(data.response);
         setError('');
         reset();
@@ -105,12 +106,9 @@ export default function RegisterForm() {
   };
 
   return (
-  <>    
-    {error && (
-      <Alert severity="error" variant="filled" sx={{ my: 4 }}>
-        {error}
-      </Alert>
-    )}
+  <> 
+
+    <AlertComponent success={success} successMsg={regData} error={error} errorMsg={error} setSuccess={setSuccess} setError={setError}  />
 
     {(isSubmitting) && (
       <Box
@@ -133,15 +131,6 @@ export default function RegisterForm() {
       </Box>
     )}
 
-    <Snackbar open={showToast} autoHideDuration={30000} onClose={() => setShowToast(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
-      <Alert
-        onClose={() => setShowToast(false)}
-        severity="success"
-        variant="filled"
-        sx={{ width: '100%' }}
-      > {regData}!
-      </Alert>
-    </Snackbar>
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Stack spacing={3}>
         <Grid container spacing={2}>
@@ -181,7 +170,7 @@ export default function RegisterForm() {
           <Grid item xs={12} md={4} sm={6}>
             <RHFTextField name="clusterCode" label="Cluster Code" />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sm={6}>
             <FormControl fullWidth error={!!errors.villageCode}>
               <InputLabel id="village_code_label">Village Code</InputLabel>
               <Controller
@@ -212,7 +201,7 @@ export default function RegisterForm() {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sm={6}>
             <FormControl fullWidth error={!!errors.state}>
               <InputLabel id="state_code_label">State</InputLabel>
               <Controller

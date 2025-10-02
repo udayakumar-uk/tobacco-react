@@ -1,7 +1,9 @@
+import {useState} from 'react'
 import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Box, Stack, TextField, Button } from '@mui/material';
+import MenuPopover from '../../../components/MenuPopover';
 // component
 import Iconify from '../../../components/Iconify';
 
@@ -39,7 +41,8 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName, showFilter = false }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, showFilter = false, advancedFilter, setAdvancedFilter }) {
+  const [filterAnchorEl, setFilterAnchorEl] = useState(false);
   return (
     <RootStyle
       sx={{
@@ -72,13 +75,63 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>
-      ) : ( 
-        showFilter && 
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
+      ) : (
+        showFilter && (
+          <>
+            <Tooltip title="Filter list">
+              <IconButton onClick={e => setFilterAnchorEl(e.currentTarget)}>
+                <Iconify icon="ic:round-filter-list" />
+              </IconButton>
+            </Tooltip>
+            <MenuPopover
+              open={Boolean(filterAnchorEl)}
+              anchorEl={filterAnchorEl}
+              onClose={() => setFilterAnchorEl(null)}
+              sx={{ width: 250 }}
+            >
+              <Box sx={{ p: 1 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>Advanced Filter</Typography>
+                <Stack spacing={1}>
+                  <TextField
+                    label="RMO Region"
+                    value={advancedFilter?.rmoRegion || ''}
+                    onChange={e => setAdvancedFilter(f => ({ ...f, rmoRegion: e.target.value }))}
+                    size="small"
+                  />
+                  <TextField
+                    label="APF Location"
+                    value={advancedFilter?.location || ''}
+                    onChange={e => setAdvancedFilter(f => ({ ...f, location: e.target.value }))}
+                    size="small"
+                  />
+                  <TextField
+                    label="Cluster Code"
+                    value={advancedFilter?.clusterCode || ''}
+                    onChange={e => setAdvancedFilter(f => ({ ...f, clusterCode: e.target.value }))}
+                    size="small"
+                  />
+                  <TextField
+                    label="Village Code"
+                    value={advancedFilter?.villageCode || ''}
+                    onChange={e => setAdvancedFilter(f => ({ ...f, villageCode: e.target.value }))}
+                    size="small"
+                  />
+                   {/* <Stack direction="row" alignItems="center" justifyContent="end" gap={1}> */}
+
+                      {(advancedFilter?.rmoRegion || advancedFilter?.location || advancedFilter?.clusterCode || advancedFilter?.villageCode) && (
+                        <Button variant="contained" onClick={() => setAdvancedFilter({ rmoRegion: '', location: '', clusterCode: '', villageCode: '' })}>
+                          Clear Filter
+                        </Button>
+                      )}
+                      {/* <Button variant="contained" fullwidth="true"  onClick={() => setFilterAnchorEl(null)} >
+                        Apply
+                      </Button> */}
+                   {/* </Stack> */}
+                </Stack>
+              </Box>
+            </MenuPopover>
+          </>
+        )
       )}
     </RootStyle>
   );

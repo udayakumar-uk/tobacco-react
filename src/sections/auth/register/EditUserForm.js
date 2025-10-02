@@ -6,7 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Grid, Box, Alert, Snackbar, Button, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
+import { Stack, Grid, Box, Button, CircularProgress, OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -14,6 +14,7 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePutFetch } from '../../../hooks/usePutFetch';
 import DropDownControl from '../../../components/DropdownControl';
 import {useAuth} from '../../../context/AuthContext';
+import AlertComponent from '../../../components/AlertComponent';
 
 // ----------------------------------------------------------------------
 
@@ -128,18 +129,7 @@ export default function EditUserForm({ userData, open, profileId }) {
   return (
     <>
       
-      {success && (
-        <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{position: 'absolute', top: {xs: 10}, right: {xs: 10} }}>
-          <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
-            {updateData.response}
-          </Alert>
-        </Snackbar>
-      )}
-      {error && (
-        <Alert severity="error" variant="filled" sx={{ my: 2 }}>
-          {error}
-        </Alert>
-      )}
+      <AlertComponent success={success} successMsg={updateData.response} error={error} errorMsg={error} setSuccess={setSuccess} setError={setError}  />
 
       {(open || isSubmitting) && (
         <Box
@@ -199,7 +189,7 @@ export default function EditUserForm({ userData, open, profileId }) {
             <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="clusterCode" label="Cluster Code" />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sm={6}>
               <FormControl fullWidth error={!!errors.villageCode}>
                 <InputLabel id="village_code_label">Village Code</InputLabel>
                 <Controller
@@ -230,7 +220,7 @@ export default function EditUserForm({ userData, open, profileId }) {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} sm={6}>
               <FormControl fullWidth error={!!errors.state}>
                 <InputLabel id="village_code_label">State</InputLabel>
                 <Controller

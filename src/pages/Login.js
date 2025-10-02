@@ -58,20 +58,22 @@ export default function Login() {
             <img src="/static/illustrations/Authentication.svg" alt="login" />
           </SectionStyle>
         )}
+      
+        <Card>
+          <Container maxWidth="sm">
+            <ContentStyle>
+              {!mdUp && (
+                <Logo disabledLink={'true'} width={300} sx={{ py: 2 }} />
+              )}
+              <Typography variant="h4" gutterBottom> Login to Tobacco Board </Typography>
 
-        <Container maxWidth="sm">
-          <ContentStyle>
-            {!mdUp && (
-              <Logo disabledLink={'true'} width={300} sx={{ py: 2 }} />
-            )}
-            <Typography variant="h4" gutterBottom> Login to Tobacco Board </Typography>
+              <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your details below.</Typography>
 
-            <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your details below.</Typography>
+              <LoginForm />
 
-            <LoginForm />
-
-          </ContentStyle>
-        </Container>
+            </ContentStyle>
+          </Container>
+        </Card>
       </RootStyle>
     </Page>
   );

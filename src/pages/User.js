@@ -266,7 +266,7 @@ export default function User() {
                 {loading && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={10} sx={{ py: 3 }}>
+                      <TableCell align="center" colSpan={3} sx={{ py: 3 }}>
                         <Typography gutterBottom align="center" variant="subtitle1">
                             <CircularProgress size="30px" />
                             <Box>Loading...</Box>
@@ -279,7 +279,7 @@ export default function User() {
                 {isUserNotFound && !loading && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={10} sx={{ py: 3 }}>
+                      <TableCell align="left" colSpan={3} sx={{ py: 3 }}>
                         <SearchNotFound searchQuery={filterName} />
                       </TableCell>
                     </TableRow>

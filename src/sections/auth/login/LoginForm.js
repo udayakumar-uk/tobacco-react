@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, IconButton, InputAdornment, Alert, Snackbar, Button } from '@mui/material';
+import { Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -14,12 +14,14 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 // Auth Context
 import { useAuth } from '../../../context/AuthContext';
 
+import AlertComponent from '../../../components/AlertComponent';
+
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const { login, user } = useAuth();
   const navigate = useNavigate();
@@ -57,7 +59,7 @@ export default function LoginForm() {
       const data = await login(formData);
       
       if (data.token) {
-        setShowToast(true);
+        setSuccess(true);
         navigate('/user');
         setError('');
       } else {
@@ -70,21 +72,9 @@ export default function LoginForm() {
 
   return (
     <>
-      {error && (
-        <Alert severity="error" variant="filled" sx={{ my: 4 }}>
-          {error}
-        </Alert>
-      )}
-
-      <Snackbar open={showToast} autoHideDuration={3000} onClose={() => setShowToast(false)}>
-        <Alert
-          onClose={() => setShowToast(false)}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >Logged in successfully!
-        </Alert>
-      </Snackbar>
+      
+      <AlertComponent success={success} successMsg="Logged in successfully" error={error} errorMsg={error} setSuccess={setSuccess} setError={setError}  />
+      
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
         <Stack spacing={3}>
