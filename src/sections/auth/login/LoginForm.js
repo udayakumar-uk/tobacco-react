@@ -28,7 +28,11 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (user) {
-      navigate("/user");
+      if(user?.userDetails?.role === 'ADMIN'){
+        navigate("/user");
+      }else{
+        navigate("/barn");
+      }
     }
   }, [user, navigate]);
 
@@ -60,7 +64,7 @@ export default function LoginForm() {
       
       if (data.token) {
         setSuccess(true);
-        navigate('/user');
+        // navigate('/user');
         setError('');
       } else {
         setError(data.response || 'Login failed');

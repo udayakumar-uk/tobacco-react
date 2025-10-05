@@ -49,19 +49,12 @@ export default function AccountPopover({ setLoad }) {
       setLoad(true);
       const data = await logout();
 
-      console.log("Logout status:", data);
-
-
       if (data.status === 1) {
-        navigate('/login');
+      console.log("Logout status:", data);
+        // navigate('/login');
       }
-
     } catch (error) {
         console.error("Logout error:", error);
-
-        localStorage.removeItem('user');
-        navigate('/login');
-        window.location.reload();
     }
   };
 
@@ -85,7 +78,7 @@ export default function AccountPopover({ setLoad }) {
           }),
         }}
       >
-        <Avatar src={`https://avatar.iran.liara.run/public/boy?username=${user.userId}`} alt="photoURL" />
+        <Avatar src={`https://avatar.iran.liara.run/public/boy?username=${user?.userId}`} alt="photoURL" />
       </IconButton>
 
       <MenuPopover

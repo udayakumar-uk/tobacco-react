@@ -70,9 +70,6 @@ const TABLE_HEAD = [
   { id: 'eboundary', label: 'E Boundary', alignRight: false},
   { id: 'wboundary', label: 'W Boundary', alignRight: false},
   { id: 'constructedYear', label: 'Constructed Year', alignRight: false, minWidth: 200 },
-  { id: 'remarks', label: 'Remarks', alignRight: false },
-  { id: 'geolocation', label: 'GEO Location', alignRight: false },
-  // { id: 'status', label: 'Barn Soil', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -145,8 +142,6 @@ function applySortFilter(array, comparator, query) {
         _user.eboundary,
         _user.wboundary,
         _user.constructedYear,
-        _user.remarks,
-        _user.geolocation
       ].some(field => field && field.toString().toLowerCase().includes(lowerQuery));
     });
   }
@@ -278,19 +273,19 @@ export default function Barn() {
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
       const payload = {
-        data: {...jsonData}
+        data: [...jsonData]
       }
 
       const barnData = await postData('barn/insert', payload);
-      setImportedBarns(jsonData);
-      setSuccess(true);
       if (barnData.status) {
+        setImportedBarns(jsonData);
+        setSuccess(true);
         console.log('Barn Added Successfully!');
       } else {
         console.log(barnData.response || 'Barn failed');
       }
       // You can handle the imported data here (e.g., send to API, show preview, etc.)
-      console.log('Imported barns:', jsonData);
+      console.log('Barn response:', barnData);
     } catch (err) {
       setUploadError('Failed to parse file. Please upload a valid Excel file.');
     } finally{
@@ -336,7 +331,7 @@ export default function Barn() {
           <AlertComponent success={success} successMsg="Imported Successfully" error={uploadError} errorMsg={uploadError} setSuccess={setSuccess} setError={setUploadError}  />
         
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer>
               <Table>
                 <UserListHead
                   order={order}
@@ -378,8 +373,6 @@ export default function Barn() {
                       eboundary,
                       wboundary,
                       constructedYear,
-                      remarks,
-                      geolocation,
                       _id
                     } = row;
                     const isItemSelected = selected.indexOf(_id) !== -1;
@@ -433,8 +426,6 @@ export default function Barn() {
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{eboundary}</TableCell>
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{wboundary}</TableCell>
                         <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{constructedYear}</TableCell>
-                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{remarks}</TableCell>
-                        <TableCell align="left" size="small" padding='normal' sx={{lineHeight: 1.2}}>{geolocation}</TableCell>
                       </TableRow>
                     );
                   })}

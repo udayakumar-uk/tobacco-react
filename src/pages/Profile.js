@@ -35,17 +35,17 @@ export default function EditUser() {
 
     <Page title="Edit User">
         <Container>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="h5">Account</Typography>
             </Stack>
-            <Card sx={{ mb: 3, p: 3, display: 'flex', alignItems: 'center' }}>
+            {/* <Card sx={{ mb: 3, p: 3, display: 'flex', alignItems: 'center' }}>
                 <Avatar sx={{ width: 80, height: 80, mr: 3 }} src={`https://avatar.iran.liara.run/public/boy?username=${user.userId}`} alt="photoURL" />
                 <Box>
                     <Typography variant="h6">{userName || user?.userDetails?.officerName || '-'}</Typography>
                     <Typography variant="subtitle1" color="text.secondary">{userEmail || user?.userDetails?.email || '-'}</Typography>
                     <Typography variant="body2" color="text.secondary">{userNumber || user?.userDetails?.mobileNumber || '-'}</Typography>
                 </Box>
-            </Card>
+            </Card> */}
             <Card sx={{width: '100%'}}>
                 <Container>
                     <ContentStyle>

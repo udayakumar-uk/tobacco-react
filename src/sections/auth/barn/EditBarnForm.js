@@ -6,7 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import {Stack, Grid, Box, Button, CircularProgress, Typography } from '@mui/material';
+import {Stack, Grid, Box, Button, CircularProgress, Typography, Dialog, DialogContent, IconButton } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/Iconify';
@@ -14,6 +14,7 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { usePutFetch } from '../../../hooks/usePutFetch';
 import DropDownControl from '../../../components/DropdownControl';
 import AlertComponent from '../../../components/AlertComponent';
+import {useAuth} from '../../../context/AuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,11 @@ export default function EditBarnForm({ barnData, open }) {
   const [success, setSuccess] = useState("");
   const [updateData, setupdateData] = useState("");
   const [putData, { loading: updateLoading }] = usePutFetch();
+  const { user, setBornDetail } = useAuth();
+  const isFO = user?.userDetails?.role === 'FO';
+
+  // Image preview state
+  const [previewImg, setPreviewImg] = useState(null);
   
   const states = ["AP","KA"];
   const burnTypes = ["Normal","Simplex","Duplex","Loose Leaf"];
@@ -139,6 +145,7 @@ export default function EditBarnForm({ barnData, open }) {
           setValue(key, barnData[key] );
         }
       });
+      setBornDetail(barnData.barnUpdateData);
     }
   }, [barnData]);
 
@@ -166,10 +173,13 @@ export default function EditBarnForm({ barnData, open }) {
   };
 
   const onSubmitForm = async (formData) => {
+    const date = new Date();
     // Convert dropdown arrays to comma-separated strings
     const submitData = {
       ...formData,
       'id': id,
+      'updatedBy': user?.userDetails?.officerName,
+      'updatedAt': new Date().toLocaleString(),
     };
 
     DropDownSchema.forEach((field) => {
@@ -231,11 +241,12 @@ export default function EditBarnForm({ barnData, open }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
         <Stack spacing={3}>
           <Grid container spacing={2}>
+            {/* Render all fields, but only FO can see geo location and photo upload. Non-FO can only edit remarks. */}
             <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="cropYear" label="Crop Year" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="state" label="State" data={states}  />
+                <DropDownControl controls={control} errors={errors} name="state" label="State" data={states} readonly={!isFO}  />
             </Grid>
             <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="district" label="District" InputProps={{ readOnly: true }} />
@@ -249,172 +260,200 @@ export default function EditBarnForm({ barnData, open }) {
             <Grid item xs={12} md={4} sm={6}>
               <RHFTextField name="village" label="Village" InputProps={{ readOnly: true }} />
             </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="rmoRegion" label="RMO Region" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="location" label="Location" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="clusterCode" label="Cluster Code" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="foCode" label="FO Code" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="tbbrno" label="TBBR No" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="barnSoil" label="Barn Soil" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="barnUnit" label="Barn Unit" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
                 <RHFTextField name="barnLic" label="Barn Lic" InputProps={{ readOnly: true }} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="barnSize" label="Barn Size" />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="barnType" label="Barn Type" data={burnTypes} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="insulation" label="Insulation" data={burnIns} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="furnace" label="Furnace" data={burnFur} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="fuelUsed" label="Fuel Used" data={burnFuel} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="roof" label="Roof" data={burnRoof} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="constructionType" label="Construction Type" data={burnCons} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="highYield" label="High Yield" data={burnHigh} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <DropDownControl controls={control} errors={errors} name="BarnCond" label="Barn Cond" data={burnCond} />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="nboundary" label="N Boundary" />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="sboundary" label="S Boundary" />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="eboundary" label="E Boundary" />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="wboundary" label="W Boundary" />
-              </Grid>
-              <Grid item xs={12} md={4} sm={6}>
-                <RHFTextField name="constructedYear" label="Constructed Year" />
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <RHFTextField name="remarks" label="Remarks" />
-              </Grid>
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+                <RHFTextField name="barnSize" label="Barn Size" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="barnType" label="Barn Type" data={burnTypes} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="insulation" label="Insulation" data={burnIns} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="furnace" label="Furnace" data={burnFur} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="fuelUsed" label="Fuel Used" data={burnFuel} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="roof" label="Roof" data={burnRoof} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="constructionType" label="Construction Type" data={burnCons} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="highYield" label="High Yield" data={burnHigh} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <DropDownControl controls={control} errors={errors} name="BarnCond" label="Barn Cond" data={burnCond} readonly={!isFO} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="nboundary" label="N Boundary" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="sboundary" label="S Boundary" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="eboundary" label="E Boundary" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="wboundary" label="W Boundary" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={4} sm={6}>
+              <RHFTextField name="constructedYear" label="Constructed Year" InputProps={{ readOnly: !isFO }} />
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <RHFTextField name="remarks" label="Remarks" />
+            </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Box sx={{position: 'relative'}}>
-                  <RHFTextField name="geolocation" label="GEO Location" fullWidth />
-                  <Button
-                    variant="outlined"
-                    startIcon={geoLoading ? <CircularProgress size={18} /> : <Iconify icon="mdi:crosshairs-gps" />}
-                    onClick={getCurrPositions}
-                    sx={{whiteSpace: 'nowrap', position: 'absolute', top: 4, right: 4}}
-                    disabled={geoLoading}
-                    size="large"
-                  >
-                    {geoLoading ? 'Getting...' : 'Get Location'}
-                  </Button>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Controller
-                  name="photos"
-                  control={control}
-                  render={({ field: { value = [], onChange } }) => {
-                    // Helper to convert File to base64
-                    const fileToBase64 = file => new Promise((resolve, reject) => {
-                      const reader = new FileReader();
-                      reader.onload = () => resolve(reader.result);
-                      reader.onerror = reject;
-                      reader.readAsDataURL(file);
-                    });
+            {/* Only FO can see and edit geo location and photo upload */}
+            {isFO && (
+              <>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{position: 'relative'}}>
+                    <RHFTextField name="geolocation" label="GEO Location" fullWidth />
+                    <Button
+                      variant="outlined"
+                      startIcon={geoLoading ? <CircularProgress size={18} /> : <Iconify icon="mdi:crosshairs-gps" />}
+                      onClick={getCurrPositions}
+                      sx={{whiteSpace: 'nowrap', position: 'absolute', top: 4, right: 4}}
+                      disabled={geoLoading}
+                      size="large"
+                    >
+                      {geoLoading ? 'Getting...' : 'Get Location'}
+                    </Button>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="photos"
+                    control={control}
+                    render={({ field: { value = [], onChange } }) => {
+                      // Helper to convert File to base64
+                      const fileToBase64 = file => new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                      });
 
-                    const handleFiles = async (e) => {
-                      const files = Array.from(e.target.files || []);
-                      const base64Files = await Promise.all(
-                        files.map(async (file) => {
-                          const base64 = await fileToBase64(file);
-                          return { base64, name: file.name };
-                        })
-                      );
-                      onChange([...(value || []), ...base64Files]);
-                    };
+                      const handleFiles = async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        const base64Files = await Promise.all(
+                          files.map(async (file) => {
+                            const base64 = await fileToBase64(file);
+                            return { base64, name: file.name };
+                          })
+                        );
+                        onChange([...(value || []), ...base64Files]);
+                      };
 
-                    const handleRemove = (idx) => {
-                      const newArr = [...value];
-                      newArr.splice(idx, 1);
-                      onChange(newArr);
-                    };
+                      const handleRemove = (idx) => {
+                        const newArr = [...value];
+                        newArr.splice(idx, 1);
+                        onChange(newArr);
+                      };
 
-                    return (
-                      <Box>
-                        <Button
-                          variant="outlined"
-                          component="label"
-                          size="large"
-                          startIcon={<Iconify icon="eva:cloud-upload-outline" />}
-                          sx={{ mb: 2, py: 3.3 }}
-                          fullWidth
-                        >
-                          Upload Photos
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            hidden
-                            onChange={handleFiles}
-                          />
-                        </Button>
-                        <Stack direction="row" spacing={2} flexWrap="wrap">
-                          {(value || []).map((file, idx) => (
-                            <Box key={file.base64 || file.name || idx} sx={{ position: 'relative', width: 80, height: 80, mb: 1 }}>
-                              <img
-                                src={file.base64 || (typeof file === 'string' ? file : '')}
-                                alt={file.name || `photo-${idx}`}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #ccc' }}
-                              />
-                              <Button
-                                size="medium"
-                                color="error"
-                                onClick={() => handleRemove(idx)}
-                                sx={{ position: 'absolute', backgroundColor: 'error.lighter', top: 2, right: 2, minWidth: 0, p: '5px', borderRadius: '50%' }}
+                      return (
+                        <Box>
+                          <Button
+                            variant="outlined"
+                            component="label"
+                            size="large"
+                            startIcon={<Iconify icon="eva:cloud-upload-outline" />}
+                            sx={{ mb: 2, py: 3.3 }}
+                            fullWidth
+                          >
+                            Upload Photos
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              hidden
+                              onChange={handleFiles}
+                            />
+                          </Button>
+                          <Stack direction="row" spacing={2} flexWrap="wrap">
+                            {(value || []).map((file, idx) => (
+                              <Box key={file.base64 || file.name || idx} sx={{ position: 'relative', width: 100, height: 100, mb: 1 }}>
+                                <Box 
+                                  aria-label={`Preview image ${file.name || idx}`}
+                                  onClick={() => setPreviewImg(file.base64 || (typeof file === 'string' ? file : ''))}
+                                >
+                                  <img
+                                    src={file.base64 || (typeof file === 'string' ? file : '')}
+                                    alt={file.name || `photo-${idx}`}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #ccc' }}
+                                  />
+                                </Box>
+                                <Button
+                                  size="medium"
+                                  color="error"
+                                  onClick={() => handleRemove(idx)}
+                                  sx={{ position: 'absolute', backgroundColor: 'error.lighter', top: 2, right: 2, minWidth: 0, p: '5px', borderRadius: '50%' }}
+                                >
+                                  <Iconify icon="eva:trash-2-outline" width={16} height={16} />
+                                </Button>
+                              </Box>
+                            ))}
+                          </Stack>
+                          {/* Image Preview Dialog */}
+                          <Dialog open={!!previewImg} onClose={() => setPreviewImg(null)} maxWidth="md">
+                            <DialogContent sx={{ position: 'relative', minHeight: '50vh', minWidth: '50vh', p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#fafafa' }}>
+                              <IconButton
+                                onClick={() => setPreviewImg(null)}
+                                sx={{ position: 'absolute', top: 5, right: 5, zIndex: 2 }}
+                                // color="palette.divider"
                               >
-                                <Iconify icon="eva:trash-2-outline" width={16} height={16} />
-                              </Button>
-                            </Box>
-                          ))}
-                        </Stack>
-                      </Box>
-                    );
-                  }}
-                />
-              </Grid>
-            
+                                <Iconify icon="eva:close-outline" width={30} height={30} />
+                              </IconButton>
+                              {previewImg && (
+                                <img
+                                  src={previewImg}
+                                  alt="Preview"
+                                  style={{ maxWidth: '100%' }}
+                                />
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                        </Box>
+                      );
+                    }}
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
         </Stack>
 
         <Box sx={{ mt: 3, textAlign: 'right' }}>
           <Button onClick={handleBack} sx={{ mr: 2}} fullWidth={false} type="button" variant="outlined" disabled={isSubmitting}>
             Cancel
-            </Button>
+          </Button>
           <LoadingButton fullWidth={false} type="submit" variant="contained" loading={isSubmitting}>
             Update Barn
           </LoadingButton>

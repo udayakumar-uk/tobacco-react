@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
+import {useNavigate} from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext();
@@ -8,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [userName, setUserName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userNumber, setUserNumber] = useState(null);
+  const [bornDetail, setBornDetail] = useState([]);
+  const navigate = useNavigate();
   // load user from localStorage on refresh
   useLayoutEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -42,6 +45,11 @@ export const AuthProvider = ({ children }) => {
 
     // save token/user in localStorage
     if (data.token) {
+      if(data?.userDetails?.role === 'ADMIN'){
+        navigate("/user");
+      }else{
+        navigate("/barn");
+      }
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
     }
@@ -61,14 +69,22 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ data: { id: user.userId } }),
     });
 
-    if (!response.ok) throw new Error("Logout failed");
+    if (!response.ok){
+      setUser(null);
+      localStorage.removeItem("user");
+      navigate('/login');
+      throw new Error("Logout failed");
+    } 
+    
     const data = await response.json();
-    console.log("Logout successful:", data);
-
+    
     if (data.status === 1) {
+      console.log("Logout successful:", data);
       // clear user from context and localStorage
       setUser(null);
       localStorage.removeItem("user");
+      navigate('/login');
+        // window.location.reload();
     }
     
     return data;
@@ -86,7 +102,9 @@ export const AuthProvider = ({ children }) => {
         setUserNumber,
         userName,
         userEmail,
-        userNumber
+        userNumber,
+        bornDetail, 
+        setBornDetail
       }}>
       {children}
     </AuthContext.Provider>

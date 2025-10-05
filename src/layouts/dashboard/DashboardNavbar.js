@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 // material
+import { useLocation } from 'react-router-dom';
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 // components
@@ -7,6 +8,7 @@ import Iconify from '../../components/Iconify';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
+import NotificationsPopover from './NotificationsPopover';
 
 import { useAuth } from '../../context/AuthContext';
 // ----------------------------------------------------------------------
@@ -43,6 +45,10 @@ DashboardNavbar.propTypes = {
 export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
 
   const { user } = useAuth();
+  const location = useLocation();
+
+  // Only show NotificationsPopover on /barn edit page
+  const showNotifications = location.pathname.startsWith('/barn/edit');
 
   return (
     <RootStyle>
@@ -51,7 +57,6 @@ export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
           <Iconify icon="eva:menu-2-outline" />
         </IconButton> */}
 
-    
         <Box sx={{ flexGrow: 1 }}>
           <Typography
             variant="h6"
@@ -73,7 +78,7 @@ export default function DashboardNavbar({ onOpenSidebar, setLoad }) {
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           {/* <LanguagePopover /> */}
-          {/* <NotificationsPopover /> */}
+          {showNotifications && <NotificationsPopover />}
           <AccountPopover setLoad={setLoad} />
         </Stack>
       </ToolbarStyle>

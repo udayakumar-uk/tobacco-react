@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }) {
       <MainStyle>
         <Outlet />
       </MainStyle>
-      <BottomNav  />
+      <BottomNav setLoad={setLoad} />
     </RootStyle>
   );
 }

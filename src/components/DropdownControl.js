@@ -2,7 +2,7 @@
 import { useForm, Controller } from 'react-hook-form';
 import { OutlinedInput, InputLabel, MenuItem, FormControl, Select, Typography } from '@mui/material';
 
-export default function DropDownControl({name, label, data, errors, controls}){
+export default function DropDownControl({name, label, data, errors, controls, multiple=false, readonly}){
     return(
         <FormControl fullWidth error={!!errors[name]}>
             <InputLabel id={`${name}-label`} >{label}</InputLabel>
@@ -15,7 +15,8 @@ export default function DropDownControl({name, label, data, errors, controls}){
                     {...field}
                     labelId={`${name}-label`}
                     id={name}
-                    input={<OutlinedInput label={label} />}
+                    input={<OutlinedInput label={label} readOnly={readonly} />}
+                    multiple={multiple}
                 >
                     {data.map((st) => (
                     <MenuItem key={st} value={st}>

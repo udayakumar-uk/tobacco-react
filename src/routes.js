@@ -17,13 +17,28 @@ import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
 // ----------------------------------------------------------------------
 
+function getDefaultRoute(user) {
+  if (!user) return <Login />;
+  if (user.userDetails.role === 'ADMIN') return <Navigate to="/user" />;
+  return <Navigate to="/barn" />;
+}
+
+
 export default function Router() {
 
     const { user } = useAuth();
 
   return useRoutes([
-    { path: '/', element: user ? <Navigate to="/user" /> : <Login /> },
-    { path: '/login', element: user ? <Navigate to="/user" /> : <Login /> },
+    { path: '/', element: getDefaultRoute(user) },
+    { path: '/login', element: getDefaultRoute(user) },
+    {
+      path: '/barn',
+      element: <DashboardLayout />,
+      children: [
+        { path: '', element: <Barn /> },
+        { path: 'edit/:id', element: <EditBarn /> }
+      ]
+    },
     {
       path: '/user',
       element: <DashboardLayout />,
@@ -31,14 +46,6 @@ export default function Router() {
         { path: '', element: <User /> },
         { path: 'createnewuser', element: <CreateNewUser /> },
         { path: 'edit/:id', element: <EditUser /> }
-      ]
-    },
-    {
-      path: '/barn',
-      element: <DashboardLayout />,
-      children: [
-        { path: '', element: <Barn /> },
-        { path: 'edit/:id', element: <EditBarn /> }
       ]
     },
     { path: '/profile',
