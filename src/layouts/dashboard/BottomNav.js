@@ -13,7 +13,7 @@ export default function BottomNav({setLoad}) {
     const navigate = useNavigate();
     const [value, setValue] = useState(0);
     const theme = useTheme();
-    const { logout, user } = useAuth();
+    const { logout, isAdmin } = useAuth();
 
   // Sync tab with route
   useEffect(() => {
@@ -47,10 +47,10 @@ export default function BottomNav({setLoad}) {
           value={value}
           onChange={handleNavChange}
         >
-          {user?.userDetails?.role === 'ADMIN' && <BottomNavigationAction label="User Management" icon={<Iconify icon="eva:people-outline" width={30} height={30} />} />}
-          <BottomNavigationAction label="Barn Management" icon={<Iconify icon="eva:home-outline"  width={30} height={30} />} />
-          <BottomNavigationAction label="Profile" icon={<Iconify icon="eva:person-outline"  width={30} height={30} />} />
-          <BottomNavigationAction onClick={()=> {
+          {isAdmin && <BottomNavigationAction sx={{ flex: 1 }} label="User Management" icon={<Iconify icon="eva:people-outline" width={30} height={30} />} />}
+          <BottomNavigationAction sx={{ maxWidth: 'none' }} label="Barn Management" icon={<Iconify icon="eva:home-outline"  width={30} height={30} />} />
+          <BottomNavigationAction sx={{ maxWidth: 'none' }} label="Profile" icon={<Iconify icon="eva:person-outline"  width={30} height={30} />} />
+          <BottomNavigationAction sx={{ maxWidth: 'none' }} onClick={()=> {
             logout()
             setLoad(true)
             }} label="Logout" icon={<Iconify icon="eva:log-out-outline"  width={30} height={30} />} />

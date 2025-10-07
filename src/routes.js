@@ -17,20 +17,20 @@ import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
 // ----------------------------------------------------------------------
 
-function getDefaultRoute(user) {
+function getDefaultRoute(user, isAdmin) {
   if (!user) return <Login />;
-  if (user.userDetails.role === 'ADMIN') return <Navigate to="/user" />;
+  if (isAdmin) return <Navigate to="/user" />;
   return <Navigate to="/barn" />;
 }
 
 
 export default function Router() {
 
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
 
   return useRoutes([
-    { path: '/', element: getDefaultRoute(user) },
-    { path: '/login', element: getDefaultRoute(user) },
+    { path: '/', element: getDefaultRoute(user, isAdmin) },
+    { path: '/login', element: getDefaultRoute(user, isAdmin) },
     {
       path: '/barn',
       element: <DashboardLayout />,

@@ -10,11 +10,14 @@ export const AuthProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState(null);
   const [userNumber, setUserNumber] = useState(null);
   const [bornDetail, setBornDetail] = useState([]);
+  const [isAdmin, setAdmin] = useState(false);
   const navigate = useNavigate();
   // load user from localStorage on refresh
   useLayoutEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    const parseUser = JSON.parse(storedUser)
+    if (storedUser) setUser(parseUser);
+    setAdmin(parseUser?.userDetails?.role === 'ADMIN');
   }, []);
 
   // Store user in localStorage and update state
@@ -47,8 +50,10 @@ export const AuthProvider = ({ children }) => {
     if (data.token) {
       if(data?.userDetails?.role === 'ADMIN'){
         navigate("/user");
+        setAdmin(true);
       }else{
         navigate("/barn");
+        setAdmin(false);
       }
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
@@ -75,7 +80,7 @@ export const AuthProvider = ({ children }) => {
       navigate('/login');
       throw new Error("Logout failed");
     } 
-    
+
     const data = await response.json();
     
     if (data.status === 1) {
@@ -104,7 +109,9 @@ export const AuthProvider = ({ children }) => {
         userEmail,
         userNumber,
         bornDetail, 
-        setBornDetail
+        setBornDetail,
+        isAdmin,
+        setAdmin
       }}>
       {children}
     </AuthContext.Provider>

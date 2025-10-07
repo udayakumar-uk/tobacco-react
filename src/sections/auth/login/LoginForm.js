@@ -23,12 +23,12 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const { login, user } = useAuth();
+  const { login, user, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      if(user?.userDetails?.role === 'ADMIN'){
+      if(isAdmin){
         navigate("/user");
       }else{
         navigate("/barn");

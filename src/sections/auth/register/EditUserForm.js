@@ -27,8 +27,7 @@ export default function EditUserForm({ userData, open, profileId }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [updateData, setupdateData] = useState("");
-  const [isAdmin, setAdmin] = useState(false);
-  const { setUserName, setUserEmail, setUserNumber, user } = useAuth();
+  const { setUserName, setUserEmail, setUserNumber, user, isAdmin } = useAuth();
 
   const [putData, { loading: updateLoading }] = usePutFetch();
   
@@ -166,7 +165,7 @@ export default function EditUserForm({ userData, open, profileId }) {
                 onInput={e => setUserName(e.target.value)}
               />
             </Grid>
-            {isAdmin && <Grid item xs={12} md={4} sm={6}>
+            {(isAdmin && !profileId) && <Grid item xs={12} md={4} sm={6}>
               <DropDownControl controls={control} errors={errors} name="role" label="Officer Role" data={roles}  />
             </Grid>}
             <Grid item xs={12} md={4} sm={6}>
