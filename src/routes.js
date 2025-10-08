@@ -2,8 +2,6 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 //
-import Blog from './pages/Blog';
-import Products from './pages/Products';
 import DashboardApp from './pages/DashboardApp';
 import User from './pages/User';
 import Barn from './pages/Barn';

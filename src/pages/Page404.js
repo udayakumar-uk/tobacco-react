@@ -14,7 +14,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: theme.spacing(12, 0)
+  padding: theme.spacing(10, 0)
 }));
 
 // ----------------------------------------------------------------------
@@ -24,19 +24,14 @@ export default function Page404() {
     <Page title="404 Page Not Found">
       <Container>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
-          <Typography variant="h3" paragraph>
+          <Typography variant="h3" paragraph sx={{ m: 0 }}>
             Sorry, page not found!
-          </Typography>
-
-          <Typography sx={{ color: 'text.secondary' }}>
-            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
-            sure to check your spelling.
           </Typography>
 
           <Box
             component="img"
             src="/static/illustrations/illustration_404.svg"
-            sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
+            sx={{ height: 200, mx: 'auto', my: { xs: 5, sm: 8 } }}
           />
 
           <Button to="/" size="large" variant="contained" component={RouterLink}>

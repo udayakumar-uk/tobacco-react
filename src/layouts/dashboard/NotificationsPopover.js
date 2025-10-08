@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { set, sub } from 'date-fns';
-import { noCase } from 'change-case';
+// import { set, sub } from 'date-fns';
+// import { noCase } from 'change-case';
 import { faker } from '@faker-js/faker';
 import { useState, useRef } from 'react';
 // @mui
@@ -8,15 +8,11 @@ import {
   Box,
   List,
   Badge,
-  Button,
   Avatar,
-  Tooltip,
   Divider,
   Typography,
   IconButton,
   ListItemText,
-  ListSubheader,
-  ListItemAvatar,
   ListItemButton,
 } from '@mui/material';
 // utils
@@ -72,14 +68,7 @@ export default function NotificationsPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Scrollbar sx={{ height: { xs: 400, sm: 'auto' } }}>
-          {bornDetail && <List
-            disablePadding
-            // subheader={
-            //   <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-            //     New
-            //   </ListSubheader>
-            // }
-          >
+          {bornDetail && <List disablePadding>
             {bornDetail.map(details => (
               <NotificationItem key={faker.datatype.uuid()} activityData={details.data} />
             ))}
@@ -89,13 +78,6 @@ export default function NotificationsPopover() {
 
         </Scrollbar>
 
-        {/* <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
-            View All
-          </Button>
-        </Box> */}
       </MenuPopover>
     </>
   );
@@ -146,45 +128,3 @@ function NotificationItem({ activityData }) {
     </ListItemButton>
   );
 }
-
-// ----------------------------------------------------------------------
-
-// function renderContent(notification) {
-//   const title = (
-//     <Typography variant="subtitle2">
-//       {notification.title}
-//       <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
-//         &nbsp; {noCase(notification.description)}
-//       </Typography>
-//     </Typography>
-//   );
-
-//   if (notification.type === 'order_placed') {
-//     return {
-//       avatar: <img alt={notification.title} src="/static/icons/ic_notification_package.svg" />,
-//       title,
-//     };
-//   }
-//   if (notification.type === 'order_shipped') {
-//     return {
-//       avatar: <img alt={notification.title} src="/static/icons/ic_notification_shipping.svg" />,
-//       title,
-//     };
-//   }
-//   if (notification.type === 'mail') {
-//     return {
-//       avatar: <img alt={notification.title} src="/static/icons/ic_notification_mail.svg" />,
-//       title,
-//     };
-//   }
-//   if (notification.type === 'chat_message') {
-//     return {
-//       avatar: <img alt={notification.title} src="/static/icons/ic_notification_chat.svg" />,
-//       title,
-//     };
-//   }
-//   return {
-//     avatar: notification.avatar ? <img alt={notification.title} src={notification.avatar} /> : null,
-//     title,
-//   };
-// }
