@@ -21,8 +21,10 @@ export default function BottomNav({setLoad}) {
       setValue(0);
     } else if (location.pathname.startsWith('/barn')) {
       setValue(1);
-    } else if (location.pathname.startsWith('/profile')) {
+    } else if (location.pathname.startsWith('/shared')) {
       setValue(2);
+    } else if (location.pathname.startsWith('/profile')) {
+      setValue(3);
     }
   }, [location.pathname]);
 
@@ -33,6 +35,8 @@ export default function BottomNav({setLoad}) {
     } else if (newValue === 1) {
       navigate('/barn');
     } else if (newValue === 2) {
+      navigate('/shared');
+    } else if (newValue === 3) {
       navigate('/profile');
     } 
   };
@@ -49,11 +53,12 @@ export default function BottomNav({setLoad}) {
         >
           {isAdmin && <BottomNavigationAction sx={{ flex: 1 }} label="User Management" icon={<Iconify icon="eva:people-outline" width={30} height={30} />} />}
           <BottomNavigationAction sx={{ maxWidth: 'none' }} label="Barn Management" icon={<Iconify icon="eva:home-outline"  width={30} height={30} />} />
+          <BottomNavigationAction sx={{ maxWidth: 'none' }} label="Barn Shared" icon={<Iconify icon="eva:radio-outline"  width={30} height={30} />} />
           <BottomNavigationAction sx={{ maxWidth: 'none' }} label="Profile" icon={<Iconify icon="eva:person-outline"  width={30} height={30} />} />
-          <BottomNavigationAction sx={{ maxWidth: 'none' }} onClick={()=> {
+          {/* <BottomNavigationAction sx={{ maxWidth: 'none' }} onClick={()=> {
             logout()
             setLoad(true)
-            }} label="Logout" icon={<Iconify icon="eva:log-out-outline"  width={30} height={30} />} />
+            }} label="Logout" icon={<Iconify icon="eva:log-out-outline"  width={30} height={30} />} /> */}
         </BottomNavigation>
       </Paper>
     </>

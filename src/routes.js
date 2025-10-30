@@ -5,6 +5,7 @@ import DashboardLayout from './layouts/dashboard';
 import DashboardApp from './pages/DashboardApp';
 import User from './pages/User';
 import Barn from './pages/Barn';
+import Shared from './pages/Shared';
 import Login from './pages/Login';
 import NotFound from './pages/Page404';
 import CreateNewUser from './pages/CreateNewUser';
@@ -35,6 +36,13 @@ export default function Router() {
       children: [
         { path: '', element: <Barn /> },
         { path: 'edit/:id', element: <EditBarn /> }
+      ]
+    },
+    {
+      path: '/shared',
+      element: <DashboardLayout />,
+      children: [
+        { path: '', element: <Shared /> }
       ]
     },
     {

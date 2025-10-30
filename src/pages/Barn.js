@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 // material
@@ -158,6 +158,7 @@ export default function Barn() {
   const [importedBarns, setImportedBarns] = useState([]);
   const [loadingSheet, setLoadingSheet] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
   const [data, setData] = useState([])
   const [success, setSuccess] = useState("");
   const [postData, {loading, error}] = usePostFetch();
@@ -170,7 +171,7 @@ export default function Barn() {
     clusterCode: '',
     villageCode: ''
   });
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const userDetails = user?.userDetails
 
   const payload = {
@@ -295,9 +296,20 @@ export default function Barn() {
 
   return (
     <Page title="Barn">
-      <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
-          <Typography variant="h5">Barn Management</Typography>
+      <Container maxWidth="xl">
+        <Stack direction="row" alignItems="center" gap={2} mb={3}>
+          <Typography variant="h5" sx={{marginRight: 'auto'}}>Barn Management</Typography>
+          {isAdmin && 
+          <>
+          <Button
+            component="a"
+            variant="outlined"
+            tabIndex={0}
+            startIcon={<Iconify icon="eva:cloud-download-outline" />}
+            href="/static/sample/Tobacco_Board_Sample.xlsx"
+            download="Tobacco_Board_Sample.xlsx"
+          >Sample Data
+          </Button>          
           <Button
             component="label"
             variant="contained"
@@ -314,6 +326,7 @@ export default function Barn() {
               disabled={loadingSheet}
             />
           </Button>
+          </>}
         </Stack>
 
         <Card>
@@ -437,16 +450,27 @@ export default function Barn() {
                 </TableBody>
 
                 {loading && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={4} sx={{ py: 3 }}>
-                        <Typography gutterBottom align="center" variant="subtitle1">
-                            <CircularProgress size="30px" />
-                            <Box>Loading...</Box>
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
+                    <><Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                        backgroundColor: alpha(theme.palette.background.default, 0.60)
+                      }}>
+                      <CircularProgress size={40} />
+                      <Box component="strong">Loading...</Box>
+                    </Box>
+                    <Box component="div" sx={{height: '255px'}}><Box component="strong"> </Box></Box>
+                  </>
                 )}
 
                 {isUserNotFound && !loading && (

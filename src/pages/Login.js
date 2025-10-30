@@ -1,7 +1,7 @@
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Card, Link, Container, Typography } from '@mui/material';
+import { Card, Link, Container, Typography, Box } from '@mui/material';
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
@@ -12,17 +12,27 @@ import { LoginForm } from '../sections/auth/login';
 
 // ----------------------------------------------------------------------
 
+const HeaderStyle = styled('div')(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+}));
+
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 'calc(100vh - 100px)'
   },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
   maxWidth: 450,
-  maxHeight: '95vh',
+  // maxHeight: '95vh',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -31,13 +41,17 @@ const SectionStyle = styled(Card)(({ theme }) => ({
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 400,
+  maxWidth: 500,
+  width: '100%',
   margin: 'auto',
-  minHeight: '100vh',
+  // minHeight: '100vh',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: theme.spacing(10, 0),
+  padding: theme.spacing(5),
+  [theme.breakpoints.down('md')]: {
+    minHeight: '100vh',
+  },
 }));
 
 // ----------------------------------------------------------------------
@@ -49,21 +63,36 @@ export default function Login() {
 
   return (
     <Page title="Login">
-      <RootStyle>
+      
         {mdUp && (
+
+          <HeaderStyle>
+            <Box component="img" width={250} sx={{ p: 1}} src="/static/logo.png" alt="Tobacco Board"  />
+            <Box component="img" width={250} sx={{ p: 1}} src="/static/logo-1.png" alt="MCI"  />
+            
+          </HeaderStyle>
+        )}
+
+      <RootStyle>
+        
+        {false && (
           <SectionStyle>
             <Logo disabledLink={'true'} width={300} sx={{ p: 3, margin: 'auto' }} />
 
             {/* <Typography variant="h3" sx={{ px: 5}}> Hi, Welcome Back </Typography> */}
-            <img src="/static/illustrations/Authentication.svg" alt="login" />
+            <Box component="img" src="/static/illustrations/Authentication.svg" alt="login"  />
           </SectionStyle>
         )}
       
         <Card>
-          <Container maxWidth="sm">
+          {/* <Container maxWidth="sm"> */}
             <ContentStyle>
               {!mdUp && (
-                <Logo disabledLink={'true'} width={300} sx={{ py: 2 }} />
+                <>
+                  {/* <Logo disabledLink={'true'} width={300} sx={{ py: 2 }} /> */}
+                  <Box component="img" width={300} sx={{ p: 1}} src="/static/logo-1.png" alt="MCI"  />
+                  <Box component="img" width={300} sx={{ p: 1}} src="/static/logo.png" alt="Tobacco Board"  />
+                </>
               )}
               <Typography variant="h4" gutterBottom> Login to Tobacco Board </Typography>
 
@@ -72,7 +101,7 @@ export default function Login() {
               <LoginForm />
 
             </ContentStyle>
-          </Container>
+          {/* </Container> */}
         </Card>
       </RootStyle>
     </Page>

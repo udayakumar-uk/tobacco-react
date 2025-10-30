@@ -37,7 +37,7 @@ import { useGetFetch } from '../hooks/useGetFetch';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: '', label: 'Action', alignRight: false, minWidth: 50 },
+//   { id: '', label: 'Action', alignRight: false, minWidth: 50 },
   { id: 'officerName', label: 'Name', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
@@ -98,7 +98,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
+export default function Shared() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -168,11 +168,8 @@ export default function User() {
       <Container maxWidth="xl">
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
           <Typography variant="h5">
-            User Management
+            Barn Shared Data
           </Typography>
-          <Button variant="contained" component={RouterLink} to="./createnewuser" startIcon={<Iconify icon="eva:plus-outline" />}>
-            New User
-          </Button>
         </Stack>
 
         <Card>
@@ -221,15 +218,17 @@ export default function User() {
                         {/* <TableCell padding="checkbox">
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, _id)} />
                         </TableCell> */}
-                        <TableCell align="center" size="small">
-                          {/* <UserMoreMenu /> */}
+
+                        {/* <TableCell align="center" size="small">
+                          <UserMoreMenu />
                           <IconButton
                             sx={{ color: 'primary.main', '&:hover': { backgroundColor: 'primary.lighter' } }}
                             onClick={() => navigate(`/user/edit/${_id}`)}
                           >
                             <Iconify icon="eva:edit-outline" width={20} height={20} />
                           </IconButton>
-                        </TableCell>
+                        </TableCell> */}
+
                         {/* <TableCell component="th" scope="row" size="small">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar alt={name} src={avatarUrl} />
@@ -286,8 +285,10 @@ export default function User() {
                       <CircularProgress size={40} />
                       <Box component="strong">Loading...</Box>
                     </Box>
+
                     <Box component="div" sx={{height: '255px'}}><Box component="strong"> </Box></Box>
-                  </>
+
+                    </>
                 )}
 
                 {isUserNotFound && !loading && (

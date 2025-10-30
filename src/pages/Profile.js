@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   margin: 'auto',
-  padding: theme.spacing(2, 0),
+  padding: theme.spacing(2),
 }));
 
 
@@ -34,7 +34,7 @@ export default function EditUser() {
   return (
 
     <Page title="Edit User">
-        <Container>
+        <Container maxWidth="xl">
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="h5">Account</Typography>
             </Stack>
@@ -46,15 +46,15 @@ export default function EditUser() {
                     <Typography variant="body2" color="text.secondary">{userNumber || user?.userDetails?.mobileNumber || '-'}</Typography>
                 </Box>
             </Card> */}
-            <Card sx={{width: '100%'}}>
-                <Container>
+            <Card>
+                {/* <Container> */}
                     <ContentStyle>
                     
                     <Typography sx={{ color: 'text.secondary', mb: 5 }}> Update user details and save changes below.</Typography>
                     
                     <EditUserForm userData={getByData} open={loading} profileId={user.userId} />
                     </ContentStyle>
-                </Container>
+                {/* </Container> */}
             </Card>
         </Container>
     </Page>
